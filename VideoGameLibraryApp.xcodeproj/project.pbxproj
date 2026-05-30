@@ -33,7 +33,7 @@
 		6F46F1A62FCB4C0E000D1D81 /* Exceptions for "VideoGameLibraryApp" folder in "VideoGameLibraryApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				AppSetupFiles/Info.plist,
 			);
 			target = 6F46F17D2FCB4C0D000D1D81 /* VideoGameLibraryApp */;
 		};
@@ -291,7 +291,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 85Y9Y93DEU;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = VideoGameLibraryApp/Info.plist;
+				INFOPLIST_FILE = VideoGameLibraryApp/AppSetupFiles/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -322,7 +322,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 85Y9Y93DEU;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = VideoGameLibraryApp/Info.plist;
+				INFOPLIST_FILE = VideoGameLibraryApp/AppSetupFiles/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
