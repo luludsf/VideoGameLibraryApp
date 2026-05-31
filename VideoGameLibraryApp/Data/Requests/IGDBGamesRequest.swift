@@ -20,10 +20,33 @@ public struct IGDBGamesRequest: Request {
         "Authorization": "Bearer \(AppConfig.accessToken)",
         "Content-Type": "text/plain"
     ]
-    
-    public let rawBody = """
-    fields name,cover.image_id;
-    sort total_rating_count desc;
-    limit 105;
-    """.data(using: .utf8)
+
+    public let rawBody: Data?
+
+    public init(searchQuery: String? = nil) {
+        let query: String
+        if let searchQuery, !searchQuery.isEmpty {
+            let escapedSearchQuery = Self.escapeSearchQuery(searchQuery)
+            query = """
+            fields name,cover.image_id;
+            search "\(escapedSearchQuery)";
+            where version_parent = null;
+            limit 50;
+            """
+        } else {
+            query = """
+            fields name,cover.image_id;
+            sort total_rating_count desc;
+            limit 105;
+            """
+        }
+
+        self.rawBody = query.data(using: .utf8)
+    }
+
+    private static func escapeSearchQuery(_ query: String) -> String {
+        query
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+    }
 }

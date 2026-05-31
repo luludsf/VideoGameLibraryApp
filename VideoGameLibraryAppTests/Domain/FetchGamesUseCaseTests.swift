@@ -24,9 +24,10 @@ struct FetchGamesUseCaseTests {
         let repository = GameRepositorySpy(result: .success(expectedGames))
         let sut = DefaultFetchGamesUseCase(repository: repository)
         
-        let games = try await sut.execute()
+        let games = try await sut.execute(searchQuery: nil)
         
         #expect(repository.fetchGamesCallCount == 1)
+        #expect(repository.receivedSearchQueries == [nil])
         #expect(games == expectedGames)
     }
 }

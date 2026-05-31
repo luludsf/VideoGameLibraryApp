@@ -10,14 +10,16 @@ import Foundation
 
 final class GameRepositorySpy: GameRepository {
     var fetchGamesCallCount = 0
+    var receivedSearchQueries: [String?] = []
     var result: Result<[GameItem], Error>
 
     init(result: Result<[GameItem], Error>) {
         self.result = result
     }
 
-    func fetchGames() async throws -> [GameItem] {
+    func fetchGames(searchQuery: String?) async throws -> [GameItem] {
         fetchGamesCallCount += 1
+        receivedSearchQueries.append(searchQuery)
         return try result.get()
     }
 }

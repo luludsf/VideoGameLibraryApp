@@ -8,5 +8,5 @@
 import Foundation
 
 protocol GameRepository {
-    func fetchGames() async throws -> [GameItem]
+    func fetchGames(searchQuery: String?) async throws -> [GameItem]
 }

@@ -11,6 +11,7 @@ import NetworkingKit
 
 final class NetworkingSpy: Networking {
     var performCallCount = 0
+    var lastRequest: (any Request)?
     var result: Result<[IGDBGameResponse], Error>
 
     init(result: Result<[IGDBGameResponse], Error>) {
@@ -19,6 +20,7 @@ final class NetworkingSpy: Networking {
 
     func perform<T>(_ request: Request) async throws -> T where T: Decodable {
         performCallCount += 1
+        lastRequest = request
         return try result.get() as! T
     }
 }

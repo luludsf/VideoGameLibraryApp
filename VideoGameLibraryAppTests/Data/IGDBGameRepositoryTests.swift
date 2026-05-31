@@ -23,7 +23,7 @@ struct IGDBGameRepositoryTests {
         ]))
         let sut = IGDBGameRepository(networking: networking)
 
-        let games = try await sut.fetchGames()
+        let games = try await sut.fetchGames(searchQuery: nil)
 
         #expect(networking.performCallCount == 1)
         #expect(games.count == 1)
@@ -44,7 +44,7 @@ struct IGDBGameRepositoryTests {
         ]))
         let sut = IGDBGameRepository(networking: networking)
 
-        let games = try await sut.fetchGames()
+        let games = try await sut.fetchGames(searchQuery: nil)
 
         #expect(games.count == 1)
         #expect(games[0].id == "11")
@@ -58,7 +58,7 @@ struct IGDBGameRepositoryTests {
         let sut = IGDBGameRepository(networking: networking)
 
         do {
-            _ = try await sut.fetchGames()
+            _ = try await sut.fetchGames(searchQuery: nil)
             Issue.record("Expected fetchGames to throw")
         } catch let error as GameListRequestError {
             if case .requestFailed(let statusCode) = error {
@@ -69,5 +69,18 @@ struct IGDBGameRepositoryTests {
         } catch {
             Issue.record("Expected GameListRequestError, got \(error)")
         }
+    }
+
+    @Test
+    func fetchGamesForwardsSearchQueryToRequest() async throws {
+        let networking = NetworkingSpy(result: .success([]))
+        let sut = IGDBGameRepository(networking: networking)
+
+        _ = try await sut.fetchGames(searchQuery: "Halo")
+
+        let rawBody = String(data: try #require(networking.lastRequest?.rawBody), encoding: .utf8)
+        #expect(rawBody?.contains("search \"Halo\";") == true)
+        #expect(rawBody?.contains("where version_parent = null;") == true)
+        #expect(rawBody?.contains("limit 50;") == true)
     }
 }

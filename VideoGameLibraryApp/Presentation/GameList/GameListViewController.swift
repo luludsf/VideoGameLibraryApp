@@ -8,13 +8,25 @@
 import UIKit
 
 final class GameListViewController: UIViewController {
+    
     var onGameSelected: ((GameItem) -> Void)?
 
     private let listView: GameListView
     private let viewModel: GameListViewModel
+    private var debounceTask: Task<Void, Never>?
     private var fetchTask: Task<Void, Never>?
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private let messageLabel = UILabel()
+    
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Buscar jogo"
+        searchController.searchBar.autocapitalizationType = .none
+        searchController.searchBar.delegate = self
+        return searchController
+    }()
     
     init(viewModel: GameListViewModel, imageLoader: ImageLoading) {
         self.listView = GameListView(imageLoader: imageLoader)
@@ -31,15 +43,16 @@ final class GameListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Games"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
         setupFeedbackViews()
         setupBindings()
-        fetchTask = Task { [weak self] in
-            guard let self = self else { return }
-            await self.viewModel.fetchGames()
-        }
+        performFetch(searchQuery: nil)
     }
 
     deinit {
+        debounceTask?.cancel()
         fetchTask?.cancel()
     }
     
@@ -108,5 +121,34 @@ final class GameListViewController: UIViewController {
     private func showErrorMessage(message: String) {
         messageLabel.text = message
         messageLabel.isHidden = false
+    }
+
+    private func performFetch(searchQuery: String?) {
+        fetchTask?.cancel()
+        fetchTask = Task { [weak self] in
+            guard let self = self else { return }
+            await self.viewModel.fetchGames(searchQuery: searchQuery)
+        }
+    }
+
+    private func scheduleSearch(for searchQuery: String?) {
+        debounceTask?.cancel()
+        debounceTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            self?.performFetch(searchQuery: searchQuery)
+        }
+    }
+}
+
+extension GameListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        scheduleSearch(for: searchController.searchBar.text)
+    }
+}
+
+extension GameListViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        performFetch(searchQuery: nil)
     }
 }

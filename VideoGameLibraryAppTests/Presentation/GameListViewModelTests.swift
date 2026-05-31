@@ -32,6 +32,7 @@ struct GameListViewModelTests {
         await sut.fetchGames()
 
         #expect(useCase.executeCallCount == 1)
+        #expect(useCase.receivedSearchQueries == [nil])
         #expect(receivedStates.count == 2)
 
         if case .loading = receivedStates[0] {
@@ -166,5 +167,48 @@ struct GameListViewModelTests {
         } else {
             Issue.record("Expected third state to be success")
         }
+    }
+
+    @MainActor
+    @Test
+    func fetchGamesPassesSearchQueryToUseCase() async {
+        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let sut = GameListViewModel(fetchGamesUseCase: useCase)
+
+        await sut.fetchGames(searchQuery: "Zelda")
+
+        #expect(useCase.executeCallCount == 1)
+        #expect(useCase.receivedSearchQueries == ["Zelda"])
+    }
+
+    @MainActor
+    @Test
+    func fetchGamesNormalizesEmptySearchQueryBeforeExecutingUseCase() async {
+        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let sut = GameListViewModel(fetchGamesUseCase: useCase)
+
+        await sut.fetchGames(searchQuery: "   ")
+
+        #expect(useCase.executeCallCount == 1)
+        #expect(useCase.receivedSearchQueries == [nil])
+    }
+
+    @MainActor
+    @Test
+    func fetchGamesDoesNotExecuteAgainWhenNormalizedSearchQueryDoesNotChange() async {
+        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let sut = GameListViewModel(fetchGamesUseCase: useCase)
+        var receivedStates: [ScreenState<GameItem>] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+
+        await sut.fetchGames(searchQuery: "Zelda")
+        await sut.fetchGames(searchQuery: "  Zelda  ")
+
+        #expect(useCase.executeCallCount == 1)
+        #expect(useCase.receivedSearchQueries == ["Zelda"])
+        #expect(receivedStates.count == 2)
     }
 }

@@ -10,14 +10,16 @@ import Foundation
 
 final class FetchGamesUseCaseSpy: FetchGamesUseCase {
     var executeCallCount = 0
+    var receivedSearchQueries: [String?] = []
     var result: Result<[GameItem], Error>
 
     init(result: Result<[GameItem], Error>) {
         self.result = result
     }
 
-    func execute() async throws -> [GameItem] {
+    func execute(searchQuery: String?) async throws -> [GameItem] {
         executeCallCount += 1
+        receivedSearchQueries.append(searchQuery)
         return try result.get()
     }
 }

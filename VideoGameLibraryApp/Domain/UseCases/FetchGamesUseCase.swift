@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FetchGamesUseCase {
-    func execute() async throws -> [GameItem]
+    func execute(searchQuery: String?) async throws -> [GameItem]
 }
 
 struct DefaultFetchGamesUseCase: FetchGamesUseCase {
@@ -18,7 +18,7 @@ struct DefaultFetchGamesUseCase: FetchGamesUseCase {
         self.repository = repository
     }
 
-    func execute() async throws -> [GameItem] {
-        try await repository.fetchGames()
+    func execute(searchQuery: String?) async throws -> [GameItem] {
+        try await repository.fetchGames(searchQuery: searchQuery)
     }
 }

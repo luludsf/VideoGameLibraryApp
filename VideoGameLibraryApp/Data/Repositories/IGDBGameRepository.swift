@@ -15,11 +15,11 @@ final class IGDBGameRepository: GameRepository {
         self.networking = networking
     }
 
-    func fetchGames() async throws -> [GameItem] {
+    func fetchGames(searchQuery: String?) async throws -> [GameItem] {
         let gamesResponse: [IGDBGameResponse]
 
         do {
-            gamesResponse = try await networking.perform(IGDBGamesRequest())
+            gamesResponse = try await networking.perform(IGDBGamesRequest(searchQuery: searchQuery))
         } catch let error as NetworkingError {
             throw GameListRequestError(networkingError: error)
         }
