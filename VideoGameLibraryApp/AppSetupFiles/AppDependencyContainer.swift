@@ -8,11 +8,19 @@
 import UIKit
 import NetworkingKit
 
-final class AppDependencyContainer {
+final class AppDependencyContainer: ViewControllerFactoryProtocol {
     private lazy var networking: Networking = URLSessionClient()
     private lazy var imageLoader: ImageLoading = ImageLoader()
 
-    func makeGameListViewController() -> UIViewController {
+    func makeAppCoordinator() -> AppCoordinator {
+        AppCoordinator(gamesCoordinator: makeGamesCoordinator())
+    }
+
+    func makeGamesCoordinator() -> GamesCoordinator {
+        GamesCoordinator(factory: self)
+    }
+
+    func makeGameListViewController() -> GameListViewController {
         let repository = IGDBGameRepository(networking: networking)
         let fetchGamesUseCase = DefaultFetchGamesUseCase(repository: repository)
         let viewModel = GameListViewModel(fetchGamesUseCase: fetchGamesUseCase)
@@ -21,5 +29,13 @@ final class AppDependencyContainer {
             viewModel: viewModel,
             imageLoader: imageLoader
         )
+    }
+
+    func makeFavoritesViewController() -> UIViewController {
+        FavoritesPlaceholderViewController()
+    }
+
+    func makeGameDetailViewController(for game: GameItem) -> UIViewController {
+        GameDetailPlaceholderViewController(game: game)
     }
 }

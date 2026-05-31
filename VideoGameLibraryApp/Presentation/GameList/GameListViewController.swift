@@ -8,7 +8,8 @@
 import UIKit
 
 final class GameListViewController: UIViewController {
-    
+    var onGameSelected: ((GameItem) -> Void)?
+
     private let listView: GameListView
     private let viewModel: GameListViewModel
     private var fetchTask: Task<Void, Never>?
@@ -45,6 +46,9 @@ final class GameListViewController: UIViewController {
     private func setupBindings() {
         listView.onFavoriteToggleRequested = { [weak self] item in
             self?.viewModel.toggleFavorite(for: item)
+        }
+        listView.onGameSelected = { [weak self] item in
+            self?.onGameSelected?(item)
         }
         
         viewModel.onStateChange = { [weak self] state in
