@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6F5101B02FCCC67F00665AFC /* NetworkingKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6F5101AF2FCCC67F00665AFC /* NetworkingKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		6F46F1952FCB4C0E000D1D81 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F5101B02FCCC67F00665AFC /* NetworkingKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,12 +90,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6F3DC9212FCBD72A00A544F4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6F46F1752FCB4C0D000D1D81 = {
 			isa = PBXGroup;
 			children = (
 				6F46F1802FCB4C0D000D1D81 /* VideoGameLibraryApp */,
 				6F46F1972FCB4C0E000D1D81 /* VideoGameLibraryAppTests */,
 				6F46F1A12FCB4C0E000D1D81 /* VideoGameLibraryAppUITests */,
+				6F3DC9212FCBD72A00A544F4 /* Frameworks */,
 				6F46F17F2FCB4C0D000D1D81 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,6 +138,7 @@
 			);
 			name = VideoGameLibraryApp;
 			packageProductDependencies = (
+				6F5101AF2FCCC67F00665AFC /* NetworkingKit */,
 			);
 			productName = VideoGameLibraryApp;
 			productReference = 6F46F17E2FCB4C0D000D1D81 /* VideoGameLibraryApp.app */;
@@ -208,6 +222,9 @@
 			);
 			mainGroup = 6F46F1752FCB4C0D000D1D81;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6F5101AE2FCCC67100665AFC /* XCRemoteSwiftPackageReference "NetworkingKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6F46F17F2FCB4C0D000D1D81 /* Products */;
 			projectDirPath = "";
@@ -346,6 +363,8 @@
 		};
 		6F46F1AA2FCB4C0E000D1D81 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 6F46F1802FCB4C0D000D1D81 /* VideoGameLibraryApp */;
+			baseConfigurationReferenceRelativePath = AppSetupFiles/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -410,6 +429,8 @@
 		};
 		6F46F1AB2FCB4C0E000D1D81 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 6F46F1802FCB4C0D000D1D81 /* VideoGameLibraryApp */;
+			baseConfigurationReferenceRelativePath = AppSetupFiles/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -589,6 +610,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6F5101AE2FCCC67100665AFC /* XCRemoteSwiftPackageReference "NetworkingKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/luludsf/NetworkingKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6F5101AF2FCCC67F00665AFC /* NetworkingKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F5101AE2FCCC67100665AFC /* XCRemoteSwiftPackageReference "NetworkingKit" */;
+			productName = NetworkingKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6F46F1762FCB4C0D000D1D81 /* Project object */;
 }

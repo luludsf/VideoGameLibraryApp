@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private let dependencyContainer = AppDependencyContainer()
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -19,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        let rootViewController = ViewController()
+        let rootViewController = dependencyContainer.makeGameListViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
         window.rootViewController = navigationController
         self.window = window

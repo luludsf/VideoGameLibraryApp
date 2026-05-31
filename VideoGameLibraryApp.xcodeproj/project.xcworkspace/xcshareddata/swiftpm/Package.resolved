@@ -1,0 +1,15 @@
+{
+  "originHash" : "0c52a5678848ac681fa563fe2ec72c79510e639ce15173e82078209d2462b3ea",
+  "pins" : [
+    {
+      "identity" : "networkingkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/luludsf/NetworkingKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9131b7c1cf6e9c46c2885cfa3912354d2e34592c"
+      }
+    }
+  ],
+  "version" : 3
+}
