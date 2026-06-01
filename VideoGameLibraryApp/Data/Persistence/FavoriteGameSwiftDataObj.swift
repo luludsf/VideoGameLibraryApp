@@ -1,5 +1,5 @@
 //
-//  FavoriteGameRecord.swift
+//  FavoriteGameSwiftDataObj.swift
 //  VideoGameLibraryApp
 //
 //  Created by Luana Duarte on 31/05/26.
@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class FavoriteGameRecord {
+final class FavoriteGameSwiftDataObj {
     @Attribute(.unique) var id: String
     var title: String
     var imageURLString: String?

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct IGDBGameResponse: Decodable {
+struct IGDBGameResponse: Decodable {
     let id: Int
     let name: String
     let cover: IGDBCoverResponse?

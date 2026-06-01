@@ -8,12 +8,12 @@
 import Foundation
 import NetworkingKit
 
-public enum GameListRequestError: LocalizedError {
+enum GameListRequestError: LocalizedError {
     case invalidResponse
     case requestFailed(statusCode: Int)
     case invalidRequest
     case invalidBody
-    case transport(Error)
+    case network(Error)
     case decoding(Error)
 
     init(networkingError: NetworkingError) {
@@ -29,17 +29,17 @@ public enum GameListRequestError: LocalizedError {
         case .decodingFailed(let error):
             self = .decoding(error)
         case .requestFailed(let error):
-            self = .transport(error)
+            self = .network(error)
         case .noInternetConnection:
-            self = .transport(URLError(.notConnectedToInternet))
+            self = .network(URLError(.notConnectedToInternet))
         case .timeout:
-            self = .transport(URLError(.timedOut))
+            self = .network(URLError(.timedOut))
         case .cancelled:
-            self = .transport(URLError(.cancelled))
+            self = .network(URLError(.cancelled))
         }
     }
     
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .invalidResponse:
             return LocalizedStrings.invalidResponseError
@@ -49,7 +49,7 @@ public enum GameListRequestError: LocalizedError {
             return LocalizedStrings.invalidRequestError
         case .invalidBody:
             return LocalizedStrings.invalidBodyError
-        case .transport(let error):
+        case .network(let error):
             return error.localizedDescription
         case .decoding:
             return LocalizedStrings.decodingError

@@ -1,5 +1,5 @@
 //
-//  FavoriteGamesRepositorySpy.swift
+//  SwiftDataFavoriteGamesRepositorySpy.swift
 //  VideoGameLibraryAppTests
 //
 //  Created by Luana Duarte on 31/05/26.
@@ -8,7 +8,7 @@
 import Foundation
 @testable import VideoGameLibraryApp
 
-final class FavoriteGamesRepositorySpy: FavoriteGamesRepositoryProtocol {
+final class SwiftDataFavoriteGamesRepositorySpy: SwiftDataFavoriteGamesRepositoryProtocol {
     var fetchFavoriteGamesCallCount = 0
     var fetchFavoriteGameIDsCallCount = 0
     var saveFavoriteCallCount = 0

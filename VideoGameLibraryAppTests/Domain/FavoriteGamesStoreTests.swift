@@ -19,10 +19,10 @@ struct FavoriteGamesStoreTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: true
         )
-        let repository = FavoriteGamesRepositorySpy(
+        let repository = SwiftDataFavoriteGamesRepositorySpy(
             favoriteGamesResult: .success([favoriteGame])
         )
-        let sut = DefaultFavoriteGamesStore(repository: repository)
+        let sut = FavoriteGamesStore(repository: repository)
 
         let favoriteGameIDs = try await sut.fetchFavoriteGameIDs()
 
@@ -38,8 +38,8 @@ struct FavoriteGamesStoreTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: false
         )
-        let repository = FavoriteGamesRepositorySpy()
-        let sut = DefaultFavoriteGamesStore(repository: repository)
+        let repository = SwiftDataFavoriteGamesRepositorySpy()
+        let sut = FavoriteGamesStore(repository: repository)
 
         try await sut.saveFavorite(game)
 
@@ -59,10 +59,10 @@ struct FavoriteGamesStoreTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: true
         )
-        let repository = FavoriteGamesRepositorySpy(
+        let repository = SwiftDataFavoriteGamesRepositorySpy(
             favoriteGamesResult: .success([favoriteGame])
         )
-        let sut = DefaultFavoriteGamesStore(repository: repository)
+        let sut = FavoriteGamesStore(repository: repository)
 
         _ = try await sut.fetchFavoriteGames()
         try await sut.removeFavorite(gameID: "1")

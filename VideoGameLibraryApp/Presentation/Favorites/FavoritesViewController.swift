@@ -38,7 +38,9 @@ final class FavoritesViewController: UIViewController {
 
     private func setupBindings() {
         favoritesView.onFavoriteToggleRequested = { [weak self] item in
-            Task { await self?.viewModel.toggleFavorite(for: item) }
+            Task {
+                await self?.viewModel.toggleFavorite(for: item)
+            }
         }
 
         favoritesView.onGameSelected = { [weak self] item in
@@ -53,13 +55,13 @@ final class FavoritesViewController: UIViewController {
                 self.favoritesView.showLoading()
             case .empty:
                 self.favoritesView.update(with: [])
-                self.favoritesView.showMessage(LocalizedStrings.noFavoritedGames)
+                self.favoritesView.showFeedback(with: LocalizedStrings.noFavoritedGames)
             case .success(let items):
                 self.favoritesView.hideFeedback()
                 self.favoritesView.update(with: items)
             case .error(let message):
                 self.favoritesView.update(with: [])
-                self.favoritesView.showMessage(message)
+                self.favoritesView.showFeedback(with: message)
             }
         }
     }

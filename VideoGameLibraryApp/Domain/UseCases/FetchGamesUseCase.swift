@@ -11,7 +11,7 @@ protocol FetchGamesUseCaseProtocol {
     func execute(searchQuery: String?, offset: Int, limit: Int) async throws -> GamesPage
 }
 
-struct DefaultFetchGamesUseCase: FetchGamesUseCaseProtocol {
+struct FetchGamesUseCase: FetchGamesUseCaseProtocol {
     private let repository: GameRepositoryProtocol
 
     init(repository: GameRepositoryProtocol) {

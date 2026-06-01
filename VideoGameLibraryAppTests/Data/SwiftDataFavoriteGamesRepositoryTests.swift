@@ -61,7 +61,7 @@ struct SwiftDataFavoriteGamesRepositoryTests {
             schema: nil,
             isStoredInMemoryOnly: true
         )
-        let container = try! ModelContainer(for: FavoriteGameRecord.self, configurations: configuration)
+        let container = try! ModelContainer(for: FavoriteGameSwiftDataObj.self, configurations: configuration)
         return SwiftDataFavoriteGamesRepository(modelContainer: container)
     }
 }

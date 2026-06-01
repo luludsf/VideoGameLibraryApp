@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct IGDBCoverResponse: Decodable {
+struct IGDBCoverResponse: Decodable {
     let imageId: String?
     let id: Int?
     

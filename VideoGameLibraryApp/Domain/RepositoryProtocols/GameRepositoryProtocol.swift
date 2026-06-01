@@ -1,5 +1,5 @@
 //
-//  GameRepository.swift
+//  GameRepositoryProtocol.swift
 //  VideoGameLibraryApp
 //
 //  Created by Luana Duarte on 31/05/26.

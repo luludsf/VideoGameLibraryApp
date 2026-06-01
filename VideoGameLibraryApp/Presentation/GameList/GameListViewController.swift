@@ -83,7 +83,7 @@ final class GameListViewController: UIViewController {
                 self.lastPresentedPaginationErrorMessage = nil
                 self.gameListView.setPaginationLoading(false)
                 self.gameListView.update(with: [])
-                self.gameListView.showMessage(LocalizedStrings.noGamesFound)
+                self.gameListView.showFeedback(with: LocalizedStrings.noGamesFound)
             case let .content(items, isLoadingNextPage, paginationErrorMessage):
                 if paginationErrorMessage == nil {
                     self.lastPresentedPaginationErrorMessage = nil
@@ -101,7 +101,7 @@ final class GameListViewController: UIViewController {
                 self.lastPresentedPaginationErrorMessage = nil
                 self.gameListView.setPaginationLoading(false)
                 self.gameListView.update(with: [])
-                self.gameListView.showMessage(message)
+                self.gameListView.showFeedback(with: message)
             }
         }
     }

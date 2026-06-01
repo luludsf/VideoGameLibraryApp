@@ -102,9 +102,12 @@ Também existe o pacote separado [`NetworkingKit`](./NetworkingKit), com seus pr
 
 ## Evoluções Futuras
 
+- criar ou utilizar algum gerenciador de dependências mais robusto (swinject por exemplo)
 - adicionar testes de UI para os fluxos principais
 - melhorar comportamento offline e estratégia de cache
 - evoluir a paginação com prefetch
 - adicionar acessibilidade
 - adicionar mais dados relevantes na tela de detalhes
-- melhorar UX de estados de lista e busca
+- melhorar UX como um todo
+- adicionar mais features como marcar se ja foi zerado, qual plataforma, backlog, entre outros.
+- modularizar o app após crescimento das features

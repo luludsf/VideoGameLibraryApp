@@ -23,7 +23,7 @@ struct FetchGamesUseCaseTests {
         ]
         let expectedPage = GamesPage(items: expectedGames, nextOffset: 25)
         let repository = GameRepositorySpy(result: .success(expectedPage))
-        let sut = DefaultFetchGamesUseCase(repository: repository)
+        let sut = FetchGamesUseCase(repository: repository)
         
         let page = try await sut.execute(searchQuery: nil, offset: 0, limit: 25)
         

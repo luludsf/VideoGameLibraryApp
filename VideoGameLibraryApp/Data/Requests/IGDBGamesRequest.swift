@@ -8,22 +8,22 @@
 import Foundation
 import NetworkingKit
 
-public struct IGDBGamesRequest: Request {
-    public let host = "api.igdb.com"
-    public let scheme = "https"
-    public let version = "v4"
-    public let path = "/games"
-    public let method: HTTPMethod = .post
+struct IGDBGamesRequest: Request {
+    let host = "api.igdb.com"
+    let scheme = "https"
+    let version = "v4"
+    let path = "/games"
+    let method: HTTPMethod = .post
     
-    public let headers: [String: String]? = [
+    let headers: [String: String]? = [
         "Client-ID": AppConfig.clientId,
         "Authorization": "Bearer \(AppConfig.accessToken)",
         "Content-Type": "text/plain"
     ]
 
-    public let rawBody: Data?
+    let rawBody: Data?
 
-    public init(searchQuery: String? = nil, offset: Int, limit: Int) {
+    init(searchQuery: String? = nil, offset: Int, limit: Int) {
         let query: String
         if let searchQuery, !searchQuery.isEmpty {
             let escapedSearchQuery = Self.escapeSearchQuery(searchQuery)

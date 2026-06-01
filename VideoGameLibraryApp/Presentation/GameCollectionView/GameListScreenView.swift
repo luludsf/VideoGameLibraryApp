@@ -43,7 +43,7 @@ final class GameListScreenView: UIView {
         feedbackView.showLoading()
     }
 
-    func showMessage(_ message: String) {
+    func showFeedback(with message: String) {
         feedbackView.showMessage(message)
     }
 
