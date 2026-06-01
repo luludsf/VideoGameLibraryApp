@@ -20,6 +20,9 @@ struct SwiftDataFavoriteGamesRepositoryTests {
             id: "1",
             title: "Mario",
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
+            summary: "Um classico de plataforma.",
+            rating: 94.0,
+            platforms: ["NES", "Switch"],
             isFavorite: true
         )
 
@@ -29,6 +32,9 @@ struct SwiftDataFavoriteGamesRepositoryTests {
         #expect(favorites.count == 1)
         #expect(favorites[0].id == "1")
         #expect(favorites[0].title == "Mario")
+        #expect(favorites[0].summary == "Um classico de plataforma.")
+        #expect(favorites[0].rating == 94.0)
+        #expect(favorites[0].platforms == ["NES", "Switch"])
         #expect(favorites[0].isFavorite == true)
     }
 

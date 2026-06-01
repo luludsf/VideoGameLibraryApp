@@ -51,7 +51,10 @@ final class AppDependencyContainer: ViewControllerFactoryProtocol {
     }
 
     func makeGameDetailViewController(for game: GameItem) -> UIViewController {
-        GameDetailPlaceholderViewController(game: game)
+        GameDetailViewController(
+            game: game,
+            imageLoader: imageLoader
+        )
     }
 
     private func makeFavoriteGamesModelContainer() -> ModelContainer {

@@ -28,14 +28,14 @@ public struct IGDBGamesRequest: Request {
         if let searchQuery, !searchQuery.isEmpty {
             let escapedSearchQuery = Self.escapeSearchQuery(searchQuery)
             query = """
-            fields name,cover.image_id;
+            fields name,cover.image_id,summary,rating,total_rating,platforms.name;
             search "\(escapedSearchQuery)";
             where version_parent = null;
             limit 50;
             """
         } else {
             query = """
-            fields name,cover.image_id;
+            fields name,cover.image_id,summary,rating,total_rating,platforms.name;
             sort total_rating_count desc;
             limit 105;
             """

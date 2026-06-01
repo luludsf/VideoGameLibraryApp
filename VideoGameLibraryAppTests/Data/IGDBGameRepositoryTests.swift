@@ -18,7 +18,14 @@ struct IGDBGameRepositoryTests {
             IGDBGameResponse(
                 id: 99,
                 name: "Zelda",
-                cover: IGDBCoverResponse(imageId: "cover123", id: 10)
+                cover: IGDBCoverResponse(imageId: "cover123", id: 10),
+                rating: 91.4,
+                summary: "Uma aventura epica.",
+                totalRating: 90.1,
+                platforms: [
+                    IGDBPlatformResponse(name: "Nintendo Switch"),
+                    IGDBPlatformResponse(name: "Wii U")
+                ]
             )
         ]))
         let sut = IGDBGameRepository(networking: networking)
@@ -30,7 +37,31 @@ struct IGDBGameRepositoryTests {
         #expect(games[0].id == "99")
         #expect(games[0].title == "Zelda")
         #expect(games[0].imageURL?.absoluteString == "https://images.igdb.com/igdb/image/upload/t_cover_big/cover123.jpg")
+        #expect(games[0].summary == "Uma aventura epica.")
+        #expect(games[0].rating == 91.4)
+        #expect(games[0].platforms == ["Nintendo Switch", "Wii U"])
         #expect(games[0].isFavorite == false)
+    }
+
+    @Test
+    func fetchGamesFallsBackToTotalRatingWhenRatingIsMissing() async throws {
+        let networking = NetworkingSpy(result: .success([
+            IGDBGameResponse(
+                id: 12,
+                name: "Metroid",
+                cover: nil,
+                rating: nil,
+                summary: nil,
+                totalRating: 88.6,
+                platforms: nil
+            )
+        ]))
+        let sut = IGDBGameRepository(networking: networking)
+
+        let games = try await sut.fetchGames(searchQuery: nil)
+
+        #expect(games.count == 1)
+        #expect(games[0].rating == 88.6)
     }
 
     @Test
@@ -80,6 +111,10 @@ struct IGDBGameRepositoryTests {
 
         let rawBody = String(data: try #require(networking.lastRequest?.rawBody), encoding: .utf8)
         #expect(rawBody?.contains("search \"Halo\";") == true)
+        #expect(rawBody?.contains("rating") == true)
+        #expect(rawBody?.contains("summary") == true)
+        #expect(rawBody?.contains("total_rating") == true)
+        #expect(rawBody?.contains("platforms.name") == true)
         #expect(rawBody?.contains("where version_parent = null;") == true)
         #expect(rawBody?.contains("limit 50;") == true)
     }

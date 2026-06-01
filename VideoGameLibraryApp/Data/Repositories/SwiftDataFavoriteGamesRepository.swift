@@ -40,7 +40,10 @@ actor SwiftDataFavoriteGamesRepository: FavoriteGamesRepository {
                 FavoriteGameRecord(
                     id: game.id,
                     title: game.title,
-                    imageURLString: game.imageURL?.absoluteString
+                    imageURLString: game.imageURL?.absoluteString,
+                    summary: game.summary,
+                    rating: game.rating,
+                    platforms: game.platforms
                 )
             )
         }

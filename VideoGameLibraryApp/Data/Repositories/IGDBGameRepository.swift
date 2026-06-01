@@ -29,8 +29,17 @@ final class IGDBGameRepository: GameRepository {
                 id: String(game.id),
                 title: game.name,
                 imageURL: game.cover?.imageURL,
+                summary: game.summary,
+                rating: game.primaryRating,
+                platforms: game.platforms?.map(\.name) ?? [],
                 isFavorite: false
             )
         }
+    }
+}
+
+private extension IGDBGameResponse {
+    var primaryRating: Double? {
+        rating ?? totalRating
     }
 }
