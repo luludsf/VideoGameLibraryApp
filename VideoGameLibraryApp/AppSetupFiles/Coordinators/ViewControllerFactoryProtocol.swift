@@ -9,6 +9,6 @@ import UIKit
 
 protocol ViewControllerFactoryProtocol {
     func makeGameListViewController() -> GameListViewController
-    func makeFavoritesViewController() -> UIViewController
+    func makeFavoritesViewController() -> FavoritesViewController
     func makeGameDetailViewController(for game: GameItem) -> UIViewController
 }

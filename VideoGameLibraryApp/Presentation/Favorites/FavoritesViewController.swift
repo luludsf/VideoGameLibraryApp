@@ -1,81 +1,62 @@
 //
-//  GameListViewController.swift
+//  FavoritesViewController.swift
 //  VideoGameLibraryApp
 //
-//  Created by Luana Duarte on 30/05/26.
+//  Created by Luana Duarte on 31/05/26.
 //
 
 import UIKit
 
-final class GameListViewController: UIViewController {
-    
+final class FavoritesViewController: UIViewController {
     var onGameSelected: ((GameItem) -> Void)?
 
     private let listView: GameListView
-    private let viewModel: GameListViewModel
-    private var debounceTask: Task<Void, Never>?
-    private var fetchTask: Task<Void, Never>?
+    private let viewModel: FavoritesViewModel
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private let messageLabel = UILabel()
-    
-    private lazy var searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Buscar jogo"
-        searchController.searchBar.autocapitalizationType = .none
-        searchController.searchBar.delegate = self
-        return searchController
-    }()
-    
-    init(viewModel: GameListViewModel, imageLoader: ImageLoading) {
+
+    init(viewModel: FavoritesViewModel, imageLoader: ImageLoading) {
         self.listView = GameListView(imageLoader: imageLoader)
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) { fatalError() }
-    
+
     override func loadView() {
         view = listView
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Games"
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
-        definesPresentationContext = true
+        title = "Favoritos"
         setupFeedbackViews()
         setupBindings()
-        performFetch(searchQuery: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Task { await viewModel.refreshFavoriteStates() }
+        Task { await viewModel.fetchFavoriteGames() }
     }
 
-    deinit {
-        debounceTask?.cancel()
-        fetchTask?.cancel()
-    }
-    
     private func setupBindings() {
         listView.onFavoriteToggleRequested = { [weak self] item in
             Task { await self?.viewModel.toggleFavorite(for: item) }
         }
+
         listView.onGameSelected = { [weak self] item in
             self?.onGameSelected?(item)
         }
-        
+
         viewModel.onStateChange = { [weak self] state in
             guard let self = self else { return }
+
             switch state {
             case .loading:
                 self.showLoadingIndicator()
             case .empty:
                 self.hideLoadingIndicator()
+                self.listView.update(with: [])
                 self.showEmptyState()
             case .success(let items):
                 self.hideLoadingIndicator()
@@ -87,7 +68,7 @@ final class GameListViewController: UIViewController {
             }
         }
     }
-    
+
     private func setupFeedbackViews() {
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         loadingIndicator.hidesWhenStopped = true
@@ -120,7 +101,7 @@ final class GameListViewController: UIViewController {
     }
 
     private func showEmptyState() {
-        messageLabel.text = "Nenhum jogo encontrado."
+        messageLabel.text = "Nenhum jogo favoritado."
         messageLabel.isHidden = false
     }
 
@@ -131,34 +112,5 @@ final class GameListViewController: UIViewController {
 
     private func hideMessage() {
         messageLabel.isHidden = true
-    }
-
-    private func performFetch(searchQuery: String?) {
-        fetchTask?.cancel()
-        fetchTask = Task { [weak self] in
-            guard let self = self else { return }
-            await self.viewModel.fetchGames(searchQuery: searchQuery)
-        }
-    }
-
-    private func scheduleSearch(for searchQuery: String?) {
-        debounceTask?.cancel()
-        debounceTask = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(300))
-            guard !Task.isCancelled else { return }
-            self?.performFetch(searchQuery: searchQuery)
-        }
-    }
-}
-
-extension GameListViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        scheduleSearch(for: searchController.searchBar.text)
-    }
-}
-
-extension GameListViewController: UISearchBarDelegate {
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        performFetch(searchQuery: nil)
     }
 }

@@ -24,6 +24,9 @@ final class GamesCoordinator: Coordinator {
         }
 
         let favoritesViewController = factory.makeFavoritesViewController()
+        favoritesViewController.onGameSelected = { [weak self] game in
+            self?.showGameDetail(for: game, from: self?.favoritesNavigationController)
+        }
 
         gameListNavigationController.setViewControllers([gameListViewController], animated: false)
         gameListNavigationController.tabBarItem = UITabBarItem(

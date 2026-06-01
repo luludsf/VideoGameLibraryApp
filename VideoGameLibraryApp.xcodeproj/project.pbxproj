@@ -57,11 +57,6 @@
 			path = VideoGameLibraryAppTests;
 			sourceTree = "<group>";
 		};
-		6F46F1A12FCB4C0E000D1D81 /* VideoGameLibraryAppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VideoGameLibraryAppUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,7 +97,6 @@
 			children = (
 				6F46F1802FCB4C0D000D1D81 /* VideoGameLibraryApp */,
 				6F46F1972FCB4C0E000D1D81 /* VideoGameLibraryAppTests */,
-				6F46F1A12FCB4C0E000D1D81 /* VideoGameLibraryAppUITests */,
 				6F3DC9212FCBD72A00A544F4 /* Frameworks */,
 				6F46F17F2FCB4C0D000D1D81 /* Products */,
 			);
@@ -179,9 +173,6 @@
 			);
 			dependencies = (
 				6F46F1A02FCB4C0E000D1D81 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				6F46F1A12FCB4C0E000D1D81 /* VideoGameLibraryAppUITests */,
 			);
 			name = VideoGameLibraryAppUITests;
 			packageProductDependencies = (
