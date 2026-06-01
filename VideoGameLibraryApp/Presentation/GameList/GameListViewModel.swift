@@ -9,9 +9,7 @@ import Foundation
 
 @MainActor
 final class GameListViewModel {
-    var onStateChange: ((ScreenState<GameItem>) -> Void)?
-    var onPaginationLoadingStateChange: ((Bool) -> Void)?
-    var onPaginationError: ((String) -> Void)?
+    var onStateChange: ((GameListViewState) -> Void)?
     
     private let pageSize = 25
     private var games: [GameItem] = []
@@ -48,7 +46,7 @@ final class GameListViewModel {
             if games.isEmpty {
                 onStateChange?(.empty)
             } else {
-                onStateChange?(.success(games))
+                emitContentState()
             }
         } catch {
             nextOffset = nil
@@ -64,20 +62,17 @@ final class GameListViewModel {
         }
 
         isLoadingNextPage = true
-        onPaginationLoadingStateChange?(true)
-
-        defer {
-            isLoadingNextPage = false
-            onPaginationLoadingStateChange?(false)
-        }
+        emitContentState()
 
         do {
             let nextPage = try await fetchPage(searchQuery: lastLoadedSearchQuery, offset: nextOffset)
             appendPageItems(nextPage.items)
             self.nextOffset = nextPage.nextOffset
-            onStateChange?(.success(games))
+            isLoadingNextPage = false
+            emitContentState()
         } catch {
-            onPaginationError?(error.localizedDescription)
+            isLoadingNextPage = false
+            emitContentState(paginationErrorMessage: error.localizedDescription)
         }
     }
     
@@ -94,9 +89,13 @@ final class GameListViewModel {
                 return game.updatingFavorite(to: !item.isFavorite)
             }
 
-            onStateChange?(.success(self.games))
+            emitContentState()
         } catch {
-            onStateChange?(.error(error.localizedDescription))
+            if games.isEmpty {
+                onStateChange?(.error(error.localizedDescription))
+            } else {
+                emitContentState(paginationErrorMessage: error.localizedDescription)
+            }
         }
     }
 
@@ -106,9 +105,9 @@ final class GameListViewModel {
         do {
             let favoriteGameIDs = try await favoriteGamesStore.fetchFavoriteGameIDs()
             games = applyFavoriteState(to: games, favoriteGameIDs: favoriteGameIDs)
-            onStateChange?(.success(games))
+            emitContentState()
         } catch {
-            onStateChange?(.error(error.localizedDescription))
+            emitContentState(paginationErrorMessage: error.localizedDescription)
         }
     }
 
@@ -143,6 +142,16 @@ final class GameListViewModel {
         let existingIDs = Set(games.map(\.id))
         let uniqueNewItems = newItems.filter { !existingIDs.contains($0.id) }
         games.append(contentsOf: uniqueNewItems)
+    }
+
+    private func emitContentState(paginationErrorMessage: String? = nil) {
+        onStateChange?(
+            .content(
+                items: games,
+                isLoadingNextPage: isLoadingNextPage,
+                paginationErrorMessage: paginationErrorMessage
+            )
+        )
     }
 
     private func applyFavoriteState(to games: [GameItem], favoriteGameIDs: Set<String>) -> [GameItem] {

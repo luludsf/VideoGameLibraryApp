@@ -16,6 +16,7 @@ final class GameListViewController: UIViewController {
     private var debounceTask: Task<Void, Never>?
     private var fetchTask: Task<Void, Never>?
     private var paginationTask: Task<Void, Never>?
+    private var lastPresentedPaginationErrorMessage: String?
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -71,33 +72,37 @@ final class GameListViewController: UIViewController {
             self?.loadNextPage()
         }
         
-        viewModel.onStateChange = { [weak self] state in
+        viewModel.onStateChange = { [weak self] (state: GameListViewState) in
             guard let self = self else { return }
             switch state {
             case .loading:
+                self.lastPresentedPaginationErrorMessage = nil
                 self.gameListView.setPaginationLoading(false)
                 self.gameListView.showLoading()
             case .empty:
+                self.lastPresentedPaginationErrorMessage = nil
                 self.gameListView.setPaginationLoading(false)
                 self.gameListView.update(with: [])
                 self.gameListView.showMessage(LocalizedStrings.noGamesFound)
-            case .success(let items):
+            case let .content(items, isLoadingNextPage, paginationErrorMessage):
+                if paginationErrorMessage == nil {
+                    self.lastPresentedPaginationErrorMessage = nil
+                }
                 self.gameListView.hideFeedback()
-                self.gameListView.setPaginationLoading(false)
+                self.gameListView.setPaginationLoading(isLoadingNextPage)
                 self.gameListView.update(with: items)
+
+                if let paginationErrorMessage,
+                   paginationErrorMessage != self.lastPresentedPaginationErrorMessage {
+                    self.lastPresentedPaginationErrorMessage = paginationErrorMessage
+                    self.presentPaginationError(message: paginationErrorMessage)
+                }
             case .error(let message):
+                self.lastPresentedPaginationErrorMessage = nil
                 self.gameListView.setPaginationLoading(false)
                 self.gameListView.update(with: [])
                 self.gameListView.showMessage(message)
             }
-        }
-
-        viewModel.onPaginationLoadingStateChange = { [weak self] isLoading in
-            self?.gameListView.setPaginationLoading(isLoading)
-        }
-
-        viewModel.onPaginationError = { [weak self] message in
-            self?.presentPaginationError(message: message)
         }
     }
 

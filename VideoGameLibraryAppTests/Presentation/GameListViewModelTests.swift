@@ -12,7 +12,7 @@ import Testing
 struct GameListViewModelTests {
     @MainActor
     @Test
-    func fetchGamesEmitsLoadingAndSuccessStates() async {
+    func fetchGamesEmitsLoadingAndContentStates() async {
         let expectedGames = [
             GameItem(
                 id: "1",
@@ -29,7 +29,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -49,10 +49,12 @@ struct GameListViewModelTests {
             Issue.record("Expected first state to be loading")
         }
 
-        if case .success(let games) = receivedStates[1] {
+        if case let .content(games, isLoadingNextPage, paginationErrorMessage) = receivedStates[1] {
             #expect(games == expectedGames)
+            #expect(isLoadingNextPage == false)
+            #expect(paginationErrorMessage == nil)
         } else {
-            Issue.record("Expected second state to be success")
+            Issue.record("Expected second state to be content")
         }
     }
 
@@ -64,7 +66,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -93,7 +95,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -117,7 +119,7 @@ struct GameListViewModelTests {
 
     @MainActor
     @Test
-    func toggleFavoriteEmitsUpdatedSuccessState() async {
+    func toggleFavoriteEmitsUpdatedContentState() async {
         let initialGame = GameItem(
             id: "1",
             title: "Mario",
@@ -132,7 +134,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -143,13 +145,15 @@ struct GameListViewModelTests {
 
         #expect(receivedStates.count == 3)
 
-        if case .success(let games) = receivedStates[2] {
+        if case let .content(games, isLoadingNextPage, paginationErrorMessage) = receivedStates[2] {
             #expect(games.count == 1)
             #expect(games[0].isFavorite == true)
+            #expect(isLoadingNextPage == false)
+            #expect(paginationErrorMessage == nil)
             #expect(favoriteGamesStore.saveFavoriteCallCount == 1)
             #expect(favoriteGamesStore.savedGames.first?.isFavorite == false)
         } else {
-            Issue.record("Expected third state to be success")
+            Issue.record("Expected third state to be content")
         }
     }
 
@@ -193,7 +197,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -209,7 +213,7 @@ struct GameListViewModelTests {
 
     @MainActor
     @Test
-    func fetchGamesMarksPersistedFavoritesInSuccessState() async {
+    func fetchGamesMarksPersistedFavoritesInContentState() async {
         let remoteGame = GameItem(
             id: "1",
             title: "Mario",
@@ -226,7 +230,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -234,10 +238,10 @@ struct GameListViewModelTests {
 
         await sut.fetchGames()
 
-        if case .success(let games) = receivedStates[1] {
+        if case let .content(games, _, _) = receivedStates[1] {
             #expect(games.first?.isFavorite == true)
         } else {
-            Issue.record("Expected success state")
+            Issue.record("Expected content state")
         }
     }
 
@@ -260,7 +264,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -270,10 +274,11 @@ struct GameListViewModelTests {
         favoriteGamesStore.favoriteGameIDsResult = .success(["1"])
         await sut.refreshFavoriteStates()
 
-        if case .success(let games) = receivedStates.last {
+        if let lastState = receivedStates.last, case let .content(games, _, paginationErrorMessage) = lastState {
             #expect(games.first?.isFavorite == true)
+            #expect(paginationErrorMessage == nil)
         } else {
-            Issue.record("Expected updated success state")
+            Issue.record("Expected updated content state")
         }
     }
 
@@ -289,7 +294,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -304,17 +309,26 @@ struct GameListViewModelTests {
         #expect(useCase.receivedSearchQueries == [nil, nil])
         #expect(useCase.receivedOffsets == [0, 25])
         #expect(useCase.receivedLimits == [25, 25])
+        #expect(receivedStates.count == 4)
 
-        if let lastState = receivedStates.last, case .success(let games) = lastState {
-            #expect(games.map(\.id) == ["1", "2"])
+        if case let .content(_, isLoadingNextPage, _) = receivedStates[2] {
+            #expect(isLoadingNextPage == true)
         } else {
-            Issue.record("Expected final state to be success")
+            Issue.record("Expected intermediate pagination loading content state")
+        }
+
+        if let lastState = receivedStates.last, case let .content(games, isLoadingNextPage, paginationErrorMessage) = lastState {
+            #expect(games.map(\.id) == ["1", "2"])
+            #expect(isLoadingNextPage == false)
+            #expect(paginationErrorMessage == nil)
+        } else {
+            Issue.record("Expected final state to be content")
         }
     }
 
     @MainActor
     @Test
-    func loadNextPageEmitsPaginationErrorWithoutReplacingCurrentContent() async {
+    func loadNextPageEmitsPaginationErrorInsideContentStateWithoutReplacingCurrentContent() async {
         let firstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: false)
         let useCase = FetchGamesUseCaseSpy(
             result: .success(GamesPage(items: [firstGame], nextOffset: 25))
@@ -323,14 +337,10 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [ScreenState<GameItem>] = []
-        var receivedPaginationErrors: [String] = []
+        var receivedStates: [GameListViewState] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
-        }
-        sut.onPaginationError = { message in
-            receivedPaginationErrors.append(message)
         }
 
         await sut.fetchGames()
@@ -338,13 +348,14 @@ struct GameListViewModelTests {
 
         await sut.loadNextPage()
 
-        #expect(receivedPaginationErrors == ["Page failed"])
-        #expect(receivedStates.count == 2)
+        #expect(receivedStates.count == 4)
 
-        if let lastState = receivedStates.last, case .success(let games) = lastState {
+        if let lastState = receivedStates.last, case let .content(games, isLoadingNextPage, paginationErrorMessage) = lastState {
             #expect(games.map(\.id) == ["1"])
+            #expect(isLoadingNextPage == false)
+            #expect(paginationErrorMessage == "Page failed")
         } else {
-            Issue.record("Expected content to remain unchanged after pagination error")
+            Issue.record("Expected content state with pagination error")
         }
     }
 }
