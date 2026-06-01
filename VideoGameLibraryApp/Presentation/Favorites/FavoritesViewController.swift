@@ -29,7 +29,7 @@ final class FavoritesViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Favoritos"
+        title = "Favorites"
         setupFeedbackViews()
         setupBindings()
     }
@@ -101,7 +101,7 @@ final class FavoritesViewController: UIViewController {
     }
 
     private func showEmptyState() {
-        messageLabel.text = "Nenhum jogo favoritado."
+        messageLabel.text = "No favorited games."
         messageLabel.isHidden = false
     }
 

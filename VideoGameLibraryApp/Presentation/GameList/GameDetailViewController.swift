@@ -57,8 +57,8 @@ final class GameDetailViewController: UIViewController {
             arrangedSubviews: [
                 titleLabel,
                 favoriteStatusLabel,
-                makeDetailRow(title: "Nota", value: formattedRating),
-                makeDetailRow(title: "Plataformas", value: formattedPlatforms),
+                makeDetailRow(title: "Rating", value: formattedRating),
+                makeDetailRow(title: "Platforms", value: formattedPlatforms),
                 descriptionLabel
             ]
         )
@@ -148,8 +148,8 @@ final class GameDetailViewController: UIViewController {
 
     private func configureContent() {
         titleLabel.text = game.title
-        favoriteStatusLabel.text = game.isFavorite ? "Salvo nos favoritos" : "Fora dos favoritos"
-        descriptionLabel.text = game.summary ?? "Nenhuma sinopse foi disponibilizada para este jogo pela API."
+        favoriteStatusLabel.text = game.isFavorite ? "Saved to favorites" : "Not in favorites"
+        descriptionLabel.text = game.summary ?? "No synopsis was provided for this game by the API."
     }
 
     private func loadCoverImageIfNeeded() {
@@ -192,11 +192,11 @@ final class GameDetailViewController: UIViewController {
     }
 
     private var formattedRating: String {
-        guard let rating = game.rating else { return "Nao informada" }
+        guard let rating = game.rating else { return "Not available" }
         return String(format: "%.1f", rating)
     }
 
     private var formattedPlatforms: String {
-        game.platforms.isEmpty ? "Nao informadas" : game.platforms.joined(separator: ", ")
+        game.platforms.isEmpty ? "Not available" : game.platforms.joined(separator: ", ")
     }
 }

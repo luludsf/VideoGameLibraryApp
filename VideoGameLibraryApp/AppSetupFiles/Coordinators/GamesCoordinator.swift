@@ -30,14 +30,14 @@ final class GamesCoordinator: Coordinator {
 
         gameListNavigationController.setViewControllers([gameListViewController], animated: false)
         gameListNavigationController.tabBarItem = UITabBarItem(
-            title: "Jogos",
+            title: "Games",
             image: UIImage(systemName: "magnifyingglass"),
             selectedImage: UIImage(systemName: "magnifyingglass")
         )
 
         favoritesNavigationController.setViewControllers([favoritesViewController], animated: false)
         favoritesNavigationController.tabBarItem = UITabBarItem(
-            title: "Favoritos",
+            title: "Favorites",
             image: UIImage(systemName: "heart"),
             selectedImage: UIImage(systemName: "heart.fill")
         )

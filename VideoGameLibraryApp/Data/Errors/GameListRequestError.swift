@@ -42,17 +42,17 @@ public enum GameListRequestError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidResponse:
-            return "A resposta da API veio em um formato invalido."
+            return "The API response came in an invalid format."
         case .requestFailed(let statusCode):
-            return "A API IGDB retornou erro \(statusCode)."
+            return "The IGDB API returned error \(statusCode)."
         case .invalidRequest:
-            return "Nao foi possivel montar a requisicao da API."
+            return "Unable to build the API request."
         case .invalidBody:
-            return "Nao foi possivel serializar o corpo da requisicao."
+            return "Unable to serialize the request body."
         case .transport(let error):
             return error.localizedDescription
         case .decoding:
-            return "Nao foi possivel interpretar a resposta da API."
+            return "Unable to parse the API response."
         }
     }
 }

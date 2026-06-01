@@ -22,7 +22,7 @@ final class GameListViewController: UIViewController {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Buscar jogo"
+        searchController.searchBar.placeholder = "Search games"
         searchController.searchBar.autocapitalizationType = .none
         searchController.searchBar.delegate = self
         return searchController
@@ -120,7 +120,7 @@ final class GameListViewController: UIViewController {
     }
 
     private func showEmptyState() {
-        messageLabel.text = "Nenhum jogo encontrado."
+        messageLabel.text = "No games found."
         messageLabel.isHidden = false
     }
 

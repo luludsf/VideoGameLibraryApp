@@ -86,7 +86,7 @@ struct GameListViewModelTests {
     @MainActor
     @Test
     func fetchGamesEmitsErrorStateWhenUseCaseFails() async {
-        let useCase = FetchGamesUseCaseSpy(result: .failure(TestLocalizedError(errorDescription: "Falhou")))
+        let useCase = FetchGamesUseCaseSpy(result: .failure(TestLocalizedError(errorDescription: "Failed")))
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
@@ -107,7 +107,7 @@ struct GameListViewModelTests {
         }
 
         if case .error(let message) = receivedStates[1] {
-            #expect(message == "Falhou")
+            #expect(message == "Failed")
         } else {
             Issue.record("Expected second state to be error")
         }
