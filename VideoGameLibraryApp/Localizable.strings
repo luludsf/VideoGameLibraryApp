@@ -12,6 +12,7 @@
 "gameDetail.favorite.saved" = "Saved to favorites";
 "gameDetail.favorite.notSaved" = "Not in favorites";
 "common.notAvailable" = "Not available";
+"common.ok" = "OK";
 "gameDetail.summary.empty" = "No synopsis was provided for this game by the API.";
 "errors.gameList.invalidResponse" = "The API response came in an invalid format.";
 "errors.gameList.requestFailed" = "The IGDB API returned error %d.";

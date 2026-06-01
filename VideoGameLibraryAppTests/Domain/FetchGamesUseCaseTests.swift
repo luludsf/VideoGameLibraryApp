@@ -21,13 +21,16 @@ struct FetchGamesUseCaseTests {
                 isFavorite: false
             )
         ]
-        let repository = GameRepositorySpy(result: .success(expectedGames))
+        let expectedPage = GamesPage(items: expectedGames, nextOffset: 25)
+        let repository = GameRepositorySpy(result: .success(expectedPage))
         let sut = DefaultFetchGamesUseCase(repository: repository)
         
-        let games = try await sut.execute(searchQuery: nil)
+        let page = try await sut.execute(searchQuery: nil, offset: 0, limit: 25)
         
         #expect(repository.fetchGamesCallCount == 1)
         #expect(repository.receivedSearchQueries == [nil])
-        #expect(games == expectedGames)
+        #expect(repository.receivedOffsets == [0])
+        #expect(repository.receivedLimits == [25])
+        #expect(page == expectedPage)
     }
 }

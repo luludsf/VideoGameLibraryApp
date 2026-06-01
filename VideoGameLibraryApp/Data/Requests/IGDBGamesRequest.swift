@@ -23,7 +23,7 @@ public struct IGDBGamesRequest: Request {
 
     public let rawBody: Data?
 
-    public init(searchQuery: String? = nil) {
+    public init(searchQuery: String? = nil, offset: Int, limit: Int) {
         let query: String
         if let searchQuery, !searchQuery.isEmpty {
             let escapedSearchQuery = Self.escapeSearchQuery(searchQuery)
@@ -31,13 +31,15 @@ public struct IGDBGamesRequest: Request {
             fields name,cover.image_id,summary,rating,total_rating,platforms.name;
             search "\(escapedSearchQuery)";
             where version_parent = null;
-            limit 50;
+            offset \(offset);
+            limit \(limit);
             """
         } else {
             query = """
             fields name,cover.image_id,summary,rating,total_rating,platforms.name;
             sort total_rating_count desc;
-            limit 105;
+            offset \(offset);
+            limit \(limit);
             """
         }
 

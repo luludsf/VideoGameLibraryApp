@@ -30,7 +30,8 @@ struct IGDBGameRepositoryTests {
         ]))
         let sut = IGDBGameRepository(networking: networking)
 
-        let games = try await sut.fetchGames(searchQuery: nil)
+        let page = try await sut.fetchGames(searchQuery: nil, offset: 0, limit: 25)
+        let games = page.items
 
         #expect(networking.performCallCount == 1)
         #expect(games.count == 1)
@@ -41,6 +42,7 @@ struct IGDBGameRepositoryTests {
         #expect(games[0].rating == 91.4)
         #expect(games[0].platforms == ["Nintendo Switch", "Wii U"])
         #expect(games[0].isFavorite == false)
+        #expect(page.nextOffset == nil)
     }
 
     @Test
@@ -58,7 +60,7 @@ struct IGDBGameRepositoryTests {
         ]))
         let sut = IGDBGameRepository(networking: networking)
 
-        let games = try await sut.fetchGames(searchQuery: nil)
+        let games = try await sut.fetchGames(searchQuery: nil, offset: 0, limit: 25).items
 
         #expect(games.count == 1)
         #expect(games[0].rating == 88.6)
@@ -75,7 +77,7 @@ struct IGDBGameRepositoryTests {
         ]))
         let sut = IGDBGameRepository(networking: networking)
 
-        let games = try await sut.fetchGames(searchQuery: nil)
+        let games = try await sut.fetchGames(searchQuery: nil, offset: 0, limit: 25).items
 
         #expect(games.count == 1)
         #expect(games[0].id == "11")
@@ -89,7 +91,7 @@ struct IGDBGameRepositoryTests {
         let sut = IGDBGameRepository(networking: networking)
 
         do {
-            _ = try await sut.fetchGames(searchQuery: nil)
+            _ = try await sut.fetchGames(searchQuery: nil, offset: 0, limit: 25)
             Issue.record("Expected fetchGames to throw")
         } catch let error as GameListRequestError {
             if case .requestFailed(let statusCode) = error {
@@ -107,7 +109,7 @@ struct IGDBGameRepositoryTests {
         let networking = NetworkingSpy(result: .success([]))
         let sut = IGDBGameRepository(networking: networking)
 
-        _ = try await sut.fetchGames(searchQuery: "Halo")
+        _ = try await sut.fetchGames(searchQuery: "Halo", offset: 25, limit: 25)
 
         let rawBody = String(data: try #require(networking.lastRequest?.rawBody), encoding: .utf8)
         #expect(rawBody?.contains("search \"Halo\";") == true)
@@ -116,6 +118,7 @@ struct IGDBGameRepositoryTests {
         #expect(rawBody?.contains("total_rating") == true)
         #expect(rawBody?.contains("platforms.name") == true)
         #expect(rawBody?.contains("where version_parent = null;") == true)
-        #expect(rawBody?.contains("limit 50;") == true)
+        #expect(rawBody?.contains("offset 25;") == true)
+        #expect(rawBody?.contains("limit 25;") == true)
     }
 }

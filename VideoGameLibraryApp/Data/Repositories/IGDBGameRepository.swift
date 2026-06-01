@@ -15,16 +15,18 @@ final class IGDBGameRepository: GameRepository {
         self.networking = networking
     }
 
-    func fetchGames(searchQuery: String?) async throws -> [GameItem] {
+    func fetchGames(searchQuery: String?, offset: Int, limit: Int) async throws -> GamesPage {
         let gamesResponse: [IGDBGameResponse]
 
         do {
-            gamesResponse = try await networking.perform(IGDBGamesRequest(searchQuery: searchQuery))
+            gamesResponse = try await networking.perform(
+                IGDBGamesRequest(searchQuery: searchQuery, offset: offset, limit: limit)
+            )
         } catch let error as NetworkingError {
             throw GameListRequestError(networkingError: error)
         }
 
-        return gamesResponse.map { game in
+        let games = gamesResponse.map { game in
             GameItem(
                 id: String(game.id),
                 title: game.name,
@@ -35,6 +37,9 @@ final class IGDBGameRepository: GameRepository {
                 isFavorite: false
             )
         }
+
+        let nextOffset = games.count < limit ? nil : offset + games.count
+        return GamesPage(items: games, nextOffset: nextOffset)
     }
 }
 

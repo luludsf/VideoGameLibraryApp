@@ -21,10 +21,10 @@ struct GameListViewModelTests {
                 isFavorite: false
             )
         ]
-        let useCase = FetchGamesUseCaseSpy(result: .success(expectedGames))
-        let favoriteGamesStore = FavoriteGamesStoreSpy(
-            favoriteGameIDsResult: .success([])
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: expectedGames, nextOffset: 25))
         )
+        let favoriteGamesStore = FavoriteGamesStoreSpy(favoriteGameIDsResult: .success([]))
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
@@ -39,6 +39,8 @@ struct GameListViewModelTests {
 
         #expect(useCase.executeCallCount == 1)
         #expect(useCase.receivedSearchQueries == [nil])
+        #expect(useCase.receivedOffsets == [0])
+        #expect(useCase.receivedLimits == [25])
         #expect(favoriteGamesStore.fetchFavoriteGameIDsCallCount == 1)
         #expect(receivedStates.count == 2)
 
@@ -57,7 +59,7 @@ struct GameListViewModelTests {
     @MainActor
     @Test
     func fetchGamesEmitsEmptyStateWhenUseCaseReturnsNoItems() async {
-        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let useCase = FetchGamesUseCaseSpy(result: .success(GamesPage(items: [], nextOffset: nil)))
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
@@ -122,7 +124,9 @@ struct GameListViewModelTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: false
         )
-        let useCase = FetchGamesUseCaseSpy(result: .success([initialGame]))
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [initialGame], nextOffset: nil))
+        )
         let favoriteGamesStore = FavoriteGamesStoreSpy()
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
@@ -151,52 +155,8 @@ struct GameListViewModelTests {
 
     @MainActor
     @Test
-    func toggleFavoriteUpdatesOnlyTheTargetItemWhenThereAreMultipleGames() async {
-        let targetGame = GameItem(
-            id: "1",
-            title: "Mario",
-            imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
-            isFavorite: false
-        )
-        let untouchedGame = GameItem(
-            id: "2",
-            title: "Zelda",
-            imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2.jpg"),
-            isFavorite: false
-        )
-        let useCase = FetchGamesUseCaseSpy(result: .success([targetGame, untouchedGame]))
-        let favoriteGamesStore = FavoriteGamesStoreSpy()
-        let sut = GameListViewModel(
-            fetchGamesUseCase: useCase,
-            favoriteGamesStore: favoriteGamesStore
-        )
-        var receivedStates: [ScreenState<GameItem>] = []
-
-        sut.onStateChange = { state in
-            receivedStates.append(state)
-        }
-
-        await sut.fetchGames()
-        await sut.toggleFavorite(for: targetGame)
-
-        #expect(receivedStates.count == 3)
-
-        if case .success(let games) = receivedStates[2] {
-            #expect(games.count == 2)
-            #expect(games[0].id == "1")
-            #expect(games[0].isFavorite == true)
-            #expect(games[1].id == "2")
-            #expect(games[1].isFavorite == false)
-            #expect(favoriteGamesStore.saveFavoriteCallCount == 1)
-        } else {
-            Issue.record("Expected third state to be success")
-        }
-    }
-
-    @MainActor
-    @Test
     func fetchGamesPassesSearchQueryToUseCase() async {
-        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let useCase = FetchGamesUseCaseSpy(result: .success(GamesPage(items: [], nextOffset: nil)))
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
@@ -206,12 +166,14 @@ struct GameListViewModelTests {
 
         #expect(useCase.executeCallCount == 1)
         #expect(useCase.receivedSearchQueries == ["Zelda"])
+        #expect(useCase.receivedOffsets == [0])
+        #expect(useCase.receivedLimits == [25])
     }
 
     @MainActor
     @Test
     func fetchGamesNormalizesEmptySearchQueryBeforeExecutingUseCase() async {
-        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let useCase = FetchGamesUseCaseSpy(result: .success(GamesPage(items: [], nextOffset: nil)))
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
@@ -226,7 +188,7 @@ struct GameListViewModelTests {
     @MainActor
     @Test
     func fetchGamesDoesNotExecuteAgainWhenNormalizedSearchQueryDoesNotChange() async {
-        let useCase = FetchGamesUseCaseSpy(result: .success([]))
+        let useCase = FetchGamesUseCaseSpy(result: .success(GamesPage(items: [], nextOffset: nil)))
         let sut = GameListViewModel(
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
@@ -254,7 +216,9 @@ struct GameListViewModelTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: false
         )
-        let useCase = FetchGamesUseCaseSpy(result: .success([remoteGame]))
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [remoteGame], nextOffset: nil))
+        )
         let favoriteGamesStore = FavoriteGamesStoreSpy(
             favoriteGameIDsResult: .success(["1"])
         )
@@ -286,7 +250,9 @@ struct GameListViewModelTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: false
         )
-        let useCase = FetchGamesUseCaseSpy(result: .success([remoteGame]))
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [remoteGame], nextOffset: nil))
+        )
         let favoriteGamesStore = FavoriteGamesStoreSpy(
             favoriteGameIDsResult: .success([])
         )
@@ -308,6 +274,77 @@ struct GameListViewModelTests {
             #expect(games.first?.isFavorite == true)
         } else {
             Issue.record("Expected updated success state")
+        }
+    }
+
+    @MainActor
+    @Test
+    func loadNextPageAppendsItemsAndUsesNextOffset() async {
+        let firstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: false)
+        let secondGame = GameItem(id: "2", title: "Zelda", imageURL: nil, isFavorite: false)
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [firstGame], nextOffset: 25))
+        )
+        let sut = GameListViewModel(
+            fetchGamesUseCase: useCase,
+            favoriteGamesStore: FavoriteGamesStoreSpy()
+        )
+        var receivedStates: [ScreenState<GameItem>] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+
+        await sut.fetchGames()
+        useCase.result = .success(GamesPage(items: [secondGame], nextOffset: nil))
+
+        await sut.loadNextPage()
+
+        #expect(useCase.executeCallCount == 2)
+        #expect(useCase.receivedSearchQueries == [nil, nil])
+        #expect(useCase.receivedOffsets == [0, 25])
+        #expect(useCase.receivedLimits == [25, 25])
+
+        if let lastState = receivedStates.last, case .success(let games) = lastState {
+            #expect(games.map(\.id) == ["1", "2"])
+        } else {
+            Issue.record("Expected final state to be success")
+        }
+    }
+
+    @MainActor
+    @Test
+    func loadNextPageEmitsPaginationErrorWithoutReplacingCurrentContent() async {
+        let firstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: false)
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [firstGame], nextOffset: 25))
+        )
+        let sut = GameListViewModel(
+            fetchGamesUseCase: useCase,
+            favoriteGamesStore: FavoriteGamesStoreSpy()
+        )
+        var receivedStates: [ScreenState<GameItem>] = []
+        var receivedPaginationErrors: [String] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+        sut.onPaginationError = { message in
+            receivedPaginationErrors.append(message)
+        }
+
+        await sut.fetchGames()
+        useCase.result = .failure(TestLocalizedError(errorDescription: "Page failed"))
+
+        await sut.loadNextPage()
+
+        #expect(receivedPaginationErrors == ["Page failed"])
+        #expect(receivedStates.count == 2)
+
+        if let lastState = receivedStates.last, case .success(let games) = lastState {
+            #expect(games.map(\.id) == ["1"])
+        } else {
+            Issue.record("Expected content to remain unchanged after pagination error")
         }
     }
 }

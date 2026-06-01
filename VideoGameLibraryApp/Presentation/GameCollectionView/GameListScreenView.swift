@@ -18,6 +18,11 @@ final class GameListScreenView: UIView {
         set { listView.onGameSelected = newValue }
     }
 
+    var onPaginationThresholdReached: (() -> Void)? {
+        get { listView.onPaginationThresholdReached }
+        set { listView.onPaginationThresholdReached = newValue }
+    }
+
     private let listView: GameListView
     private let feedbackView = FeedbackStateView()
 
@@ -45,6 +50,10 @@ final class GameListScreenView: UIView {
     func hideFeedback() {
         feedbackView.hideLoading()
         feedbackView.hideMessage()
+    }
+
+    func setPaginationLoading(_ isLoading: Bool) {
+        listView.setPaginationLoading(isLoading)
     }
 
     private func setupViewCode() {

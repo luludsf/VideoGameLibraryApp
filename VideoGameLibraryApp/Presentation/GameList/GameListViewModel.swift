@@ -9,15 +9,16 @@ import Foundation
 
 @MainActor
 final class GameListViewModel {
-    private enum ExecutedSearchQuery: Equatable {
-        case none
-        case value(String?)
-    }
-
     var onStateChange: ((ScreenState<GameItem>) -> Void)?
+    var onPaginationLoadingStateChange: ((Bool) -> Void)?
+    var onPaginationError: ((String) -> Void)?
     
+    private let pageSize = 25
     private var games: [GameItem] = []
-    private var lastExecutedSearchQuery: ExecutedSearchQuery = .none
+    private var lastLoadedSearchQuery: String?
+    private var hasLoadedFirstPage = false
+    private var nextOffset: Int?
+    private var isLoadingNextPage = false
     private let fetchGamesUseCase: FetchGamesUseCase
     private let favoriteGamesStore: FavoriteGamesStore
 
@@ -31,24 +32,52 @@ final class GameListViewModel {
     
     func fetchGames(searchQuery: String? = nil) async {
         let normalizedSearchQuery = normalizedSearchQuery(from: searchQuery)
-        let currentSearchQuery: ExecutedSearchQuery = .value(normalizedSearchQuery)
-        guard currentSearchQuery != lastExecutedSearchQuery else { return }
+        guard shouldFetchFirstPage(for: normalizedSearchQuery) else { return }
 
+        games = []
+        nextOffset = nil
         onStateChange?(.loading)
 
         do {
-            let fetchedGames = try await self.fetchGamesUseCase.execute(searchQuery: normalizedSearchQuery)
-            let favoriteGameIDs = try await favoriteGamesStore.fetchFavoriteGameIDs()
-            self.games = applyFavoriteState(to: fetchedGames, favoriteGameIDs: favoriteGameIDs)
-            self.lastExecutedSearchQuery = currentSearchQuery
+            let firstPage = try await fetchPage(searchQuery: normalizedSearchQuery, offset: 0)
+            games = firstPage.items
+            nextOffset = firstPage.nextOffset
+            lastLoadedSearchQuery = normalizedSearchQuery
+            hasLoadedFirstPage = true
 
             if games.isEmpty {
-                self.onStateChange?(.empty)
+                onStateChange?(.empty)
             } else {
-                self.onStateChange?(.success(games))
+                onStateChange?(.success(games))
             }
         } catch {
-            self.onStateChange?(.error(error.localizedDescription))
+            nextOffset = nil
+            onStateChange?(.error(error.localizedDescription))
+        }
+    }
+
+    func loadNextPage() async {
+        guard let nextOffset,
+              !games.isEmpty,
+              !isLoadingNextPage else {
+            return
+        }
+
+        isLoadingNextPage = true
+        onPaginationLoadingStateChange?(true)
+
+        defer {
+            isLoadingNextPage = false
+            onPaginationLoadingStateChange?(false)
+        }
+
+        do {
+            let nextPage = try await fetchPage(searchQuery: lastLoadedSearchQuery, offset: nextOffset)
+            appendPageItems(nextPage.items)
+            self.nextOffset = nextPage.nextOffset
+            onStateChange?(.success(games))
+        } catch {
+            onPaginationError?(error.localizedDescription)
         }
     }
     
@@ -90,6 +119,30 @@ final class GameListViewModel {
         }
 
         return searchQuery
+    }
+
+    private func shouldFetchFirstPage(for searchQuery: String?) -> Bool {
+        guard hasLoadedFirstPage else { return true }
+        return searchQuery != lastLoadedSearchQuery
+    }
+
+    private func fetchPage(searchQuery: String?, offset: Int) async throws -> GamesPage {
+        let page = try await fetchGamesUseCase.execute(
+            searchQuery: searchQuery,
+            offset: offset,
+            limit: pageSize
+        )
+        let favoriteGameIDs = try await favoriteGamesStore.fetchFavoriteGameIDs()
+        return GamesPage(
+            items: applyFavoriteState(to: page.items, favoriteGameIDs: favoriteGameIDs),
+            nextOffset: page.nextOffset
+        )
+    }
+
+    private func appendPageItems(_ newItems: [GameItem]) {
+        let existingIDs = Set(games.map(\.id))
+        let uniqueNewItems = newItems.filter { !existingIDs.contains($0.id) }
+        games.append(contentsOf: uniqueNewItems)
     }
 
     private func applyFavoriteState(to games: [GameItem], favoriteGameIDs: Set<String>) -> [GameItem] {

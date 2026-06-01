@@ -22,6 +22,7 @@ enum LocalizedStrings {
     static let savedToFavorites = localized("gameDetail.favorite.saved")
     static let notInFavorites = localized("gameDetail.favorite.notSaved")
     static let notAvailable = localized("common.notAvailable")
+    static let okActionTitle = localized("common.ok")
     static let noSynopsis = localized("gameDetail.summary.empty")
     static let invalidResponseError = localized("errors.gameList.invalidResponse")
     static let requestFailedFormat = localized("errors.gameList.requestFailed")
