@@ -10,13 +10,11 @@ import UIKit
 final class FavoritesViewController: UIViewController {
     var onGameSelected: ((GameItem) -> Void)?
 
-    private let listView: GameListView
+    private let favoritesView: GameListScreenView
     private let viewModel: FavoritesViewModel
-    private let loadingIndicator = UIActivityIndicatorView(style: .large)
-    private let messageLabel = UILabel()
 
     init(viewModel: FavoritesViewModel, imageLoader: ImageLoading) {
-        self.listView = GameListView(imageLoader: imageLoader)
+        self.favoritesView = GameListScreenView(imageLoader: imageLoader)
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -24,13 +22,12 @@ final class FavoritesViewController: UIViewController {
     required init?(coder: NSCoder) { fatalError() }
 
     override func loadView() {
-        view = listView
+        view = favoritesView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Favorites"
-        setupFeedbackViews()
+        title = LocalizedStrings.favoritesScreenTitle
         setupBindings()
     }
 
@@ -40,11 +37,11 @@ final class FavoritesViewController: UIViewController {
     }
 
     private func setupBindings() {
-        listView.onFavoriteToggleRequested = { [weak self] item in
+        favoritesView.onFavoriteToggleRequested = { [weak self] item in
             Task { await self?.viewModel.toggleFavorite(for: item) }
         }
 
-        listView.onGameSelected = { [weak self] item in
+        favoritesView.onGameSelected = { [weak self] item in
             self?.onGameSelected?(item)
         }
 
@@ -53,64 +50,16 @@ final class FavoritesViewController: UIViewController {
 
             switch state {
             case .loading:
-                self.showLoadingIndicator()
+                self.favoritesView.showLoading()
             case .empty:
-                self.hideLoadingIndicator()
-                self.listView.update(with: [])
-                self.showEmptyState()
+                self.favoritesView.update(with: [])
+                self.favoritesView.showMessage(LocalizedStrings.noFavoritedGames)
             case .success(let items):
-                self.hideLoadingIndicator()
-                self.hideMessage()
-                self.listView.update(with: items)
+                self.favoritesView.hideFeedback()
+                self.favoritesView.update(with: items)
             case .error(let message):
-                self.hideLoadingIndicator()
-                self.showErrorMessage(message: message)
+                self.favoritesView.showMessage(message)
             }
         }
-    }
-
-    private func setupFeedbackViews() {
-        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        loadingIndicator.hidesWhenStopped = true
-        view.addSubview(loadingIndicator)
-
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        messageLabel.textAlignment = .center
-        messageLabel.textColor = .secondaryLabel
-        messageLabel.numberOfLines = 0
-        messageLabel.isHidden = true
-        view.addSubview(messageLabel)
-
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            messageLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            messageLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 24),
-            messageLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -24)
-        ])
-    }
-
-    private func showLoadingIndicator() {
-        hideMessage()
-        loadingIndicator.startAnimating()
-    }
-
-    private func hideLoadingIndicator() {
-        loadingIndicator.stopAnimating()
-    }
-
-    private func showEmptyState() {
-        messageLabel.text = "No favorited games."
-        messageLabel.isHidden = false
-    }
-
-    private func showErrorMessage(message: String) {
-        messageLabel.text = message
-        messageLabel.isHidden = false
-    }
-
-    private func hideMessage() {
-        messageLabel.isHidden = true
     }
 }

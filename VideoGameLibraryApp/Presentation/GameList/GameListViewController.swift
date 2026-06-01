@@ -11,25 +11,23 @@ final class GameListViewController: UIViewController {
     
     var onGameSelected: ((GameItem) -> Void)?
 
-    private let listView: GameListView
+    private let gameListView: GameListScreenView
     private let viewModel: GameListViewModel
     private var debounceTask: Task<Void, Never>?
     private var fetchTask: Task<Void, Never>?
-    private let loadingIndicator = UIActivityIndicatorView(style: .large)
-    private let messageLabel = UILabel()
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search games"
+        searchController.searchBar.placeholder = LocalizedStrings.searchGamesPlaceholder
         searchController.searchBar.autocapitalizationType = .none
         searchController.searchBar.delegate = self
         return searchController
     }()
     
     init(viewModel: GameListViewModel, imageLoader: ImageLoading) {
-        self.listView = GameListView(imageLoader: imageLoader)
+        self.gameListView = GameListScreenView(imageLoader: imageLoader)
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -37,16 +35,15 @@ final class GameListViewController: UIViewController {
     required init?(coder: NSCoder) { fatalError() }
     
     override func loadView() {
-        view = listView
+        view = gameListView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Games"
+        title = LocalizedStrings.gamesScreenTitle
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
-        setupFeedbackViews()
         setupBindings()
         performFetch(searchQuery: nil)
     }
@@ -62,10 +59,10 @@ final class GameListViewController: UIViewController {
     }
     
     private func setupBindings() {
-        listView.onFavoriteToggleRequested = { [weak self] item in
+        gameListView.onFavoriteToggleRequested = { [weak self] item in
             Task { await self?.viewModel.toggleFavorite(for: item) }
         }
-        listView.onGameSelected = { [weak self] item in
+        gameListView.onGameSelected = { [weak self] item in
             self?.onGameSelected?(item)
         }
         
@@ -73,64 +70,16 @@ final class GameListViewController: UIViewController {
             guard let self = self else { return }
             switch state {
             case .loading:
-                self.showLoadingIndicator()
+                self.gameListView.showLoading()
             case .empty:
-                self.hideLoadingIndicator()
-                self.showEmptyState()
+                self.gameListView.showMessage(LocalizedStrings.noGamesFound)
             case .success(let items):
-                self.hideLoadingIndicator()
-                self.hideMessage()
-                self.listView.update(with: items)
+                self.gameListView.hideFeedback()
+                self.gameListView.update(with: items)
             case .error(let message):
-                self.hideLoadingIndicator()
-                self.showErrorMessage(message: message)
+                self.gameListView.showMessage(message)
             }
         }
-    }
-    
-    private func setupFeedbackViews() {
-        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        loadingIndicator.hidesWhenStopped = true
-        view.addSubview(loadingIndicator)
-
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        messageLabel.textAlignment = .center
-        messageLabel.textColor = .secondaryLabel
-        messageLabel.numberOfLines = 0
-        messageLabel.isHidden = true
-        view.addSubview(messageLabel)
-
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            messageLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            messageLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 24),
-            messageLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -24)
-        ])
-    }
-
-    private func showLoadingIndicator() {
-        hideMessage()
-        loadingIndicator.startAnimating()
-    }
-
-    private func hideLoadingIndicator() {
-        loadingIndicator.stopAnimating()
-    }
-
-    private func showEmptyState() {
-        messageLabel.text = "No games found."
-        messageLabel.isHidden = false
-    }
-
-    private func showErrorMessage(message: String) {
-        messageLabel.text = message
-        messageLabel.isHidden = false
-    }
-
-    private func hideMessage() {
-        messageLabel.isHidden = true
     }
 
     private func performFetch(searchQuery: String?) {
