@@ -7,14 +7,14 @@
 
 import Foundation
 
-protocol FetchGamesUseCase {
+protocol FetchGamesUseCaseProtocol {
     func execute(searchQuery: String?, offset: Int, limit: Int) async throws -> GamesPage
 }
 
-struct DefaultFetchGamesUseCase: FetchGamesUseCase {
-    private let repository: GameRepository
+struct DefaultFetchGamesUseCase: FetchGamesUseCaseProtocol {
+    private let repository: GameRepositoryProtocol
 
-    init(repository: GameRepository) {
+    init(repository: GameRepositoryProtocol) {
         self.repository = repository
     }
 

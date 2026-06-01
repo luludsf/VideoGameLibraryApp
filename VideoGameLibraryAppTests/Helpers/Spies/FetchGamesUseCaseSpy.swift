@@ -8,7 +8,7 @@
 import Foundation
 @testable import VideoGameLibraryApp
 
-final class FetchGamesUseCaseSpy: FetchGamesUseCase {
+final class FetchGamesUseCaseSpy: FetchGamesUseCaseProtocol {
     var executeCallCount = 0
     var receivedSearchQueries: [String?] = []
     var receivedOffsets: [Int] = []

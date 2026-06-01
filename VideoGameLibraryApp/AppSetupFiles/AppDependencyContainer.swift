@@ -11,12 +11,12 @@ import SwiftData
 
 final class AppDependencyContainer: ViewControllerFactoryProtocol {
     private lazy var networking: Networking = URLSessionClient()
-    private lazy var imageLoader: ImageLoading = ImageLoader()
+    private lazy var imageLoader: ImageLoadingProtocol = ImageLoader()
     private lazy var favoriteGamesModelContainer: ModelContainer = makeFavoriteGamesModelContainer()
-    private lazy var favoriteGamesRepository: FavoriteGamesRepository = SwiftDataFavoriteGamesRepository(
+    private lazy var favoriteGamesRepository: FavoriteGamesRepositoryProtocol = SwiftDataFavoriteGamesRepository(
         modelContainer: favoriteGamesModelContainer
     )
-    private lazy var favoriteGamesStore: FavoriteGamesStore = DefaultFavoriteGamesStore(
+    private lazy var favoriteGamesStore: FavoriteGamesStoreProtocol = DefaultFavoriteGamesStore(
         repository: favoriteGamesRepository
     )
 

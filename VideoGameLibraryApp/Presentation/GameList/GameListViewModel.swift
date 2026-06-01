@@ -17,12 +17,12 @@ final class GameListViewModel {
     private var hasLoadedFirstPage = false
     private var nextOffset: Int?
     private var isLoadingNextPage = false
-    private let fetchGamesUseCase: FetchGamesUseCase
-    private let favoriteGamesStore: FavoriteGamesStore
+    private let fetchGamesUseCase: FetchGamesUseCaseProtocol
+    private let favoriteGamesStore: FavoriteGamesStoreProtocol
 
     init(
-        fetchGamesUseCase: FetchGamesUseCase,
-        favoriteGamesStore: FavoriteGamesStore
+        fetchGamesUseCase: FetchGamesUseCaseProtocol,
+        favoriteGamesStore: FavoriteGamesStoreProtocol
     ) {
         self.fetchGamesUseCase = fetchGamesUseCase
         self.favoriteGamesStore = favoriteGamesStore

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-actor SwiftDataFavoriteGamesRepository: FavoriteGamesRepository {
+actor SwiftDataFavoriteGamesRepository: FavoriteGamesRepositoryProtocol {
     private let modelContainer: ModelContainer
 
     init(modelContainer: ModelContainer) {

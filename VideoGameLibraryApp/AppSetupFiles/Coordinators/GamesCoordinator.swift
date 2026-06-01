@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class GamesCoordinator: Coordinator {
+final class GamesCoordinator: CoordinatorProtocol {
     private let factory: ViewControllerFactoryProtocol
     private let tabBarController = UITabBarController()
     private let gameListNavigationController = UINavigationController()

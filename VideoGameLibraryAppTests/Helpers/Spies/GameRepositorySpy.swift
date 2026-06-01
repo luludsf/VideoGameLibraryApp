@@ -8,7 +8,7 @@
 import Foundation
 @testable import VideoGameLibraryApp
 
-final class GameRepositorySpy: GameRepository {
+final class GameRepositorySpy: GameRepositoryProtocol {
     var fetchGamesCallCount = 0
     var receivedSearchQueries: [String?] = []
     var receivedOffsets: [Int] = []

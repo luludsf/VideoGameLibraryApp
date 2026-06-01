@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AppCoordinator: Coordinator {
+final class AppCoordinator: CoordinatorProtocol {
     private let gamesCoordinator: GamesCoordinator
 
     init(gamesCoordinator: GamesCoordinator) {

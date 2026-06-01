@@ -9,7 +9,7 @@ import Foundation
 @testable import VideoGameLibraryApp
 
 @MainActor
-final class FavoriteGamesStoreSpy: FavoriteGamesStore {
+final class FavoriteGamesStoreSpy: FavoriteGamesStoreProtocol {
     var fetchFavoriteGamesCallCount = 0
     var fetchFavoriteGameIDsCallCount = 0
     var saveFavoriteCallCount = 0

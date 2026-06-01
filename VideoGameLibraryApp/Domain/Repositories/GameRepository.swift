@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol GameRepository {
+protocol GameRepositoryProtocol {
     func fetchGames(searchQuery: String?, offset: Int, limit: Int) async throws -> GamesPage
 }

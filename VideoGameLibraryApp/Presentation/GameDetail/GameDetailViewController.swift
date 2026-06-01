@@ -10,10 +10,10 @@ import UIKit
 final class GameDetailViewController: UIViewController {
     private let game: GameItem
     private let gameDetailView = GameDetailView()
-    private let imageLoader: ImageLoading
+    private let imageLoader: ImageLoadingProtocol
     private var imageLoadTask: Task<Void, Never>?
 
-    init(game: GameItem, imageLoader: ImageLoading) {
+    init(game: GameItem, imageLoader: ImageLoadingProtocol) {
         self.game = game
         self.imageLoader = imageLoader
         super.init(nibName: nil, bundle: nil)

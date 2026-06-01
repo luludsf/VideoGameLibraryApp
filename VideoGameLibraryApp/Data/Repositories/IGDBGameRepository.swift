@@ -8,7 +8,7 @@
 import Foundation
 import NetworkingKit
 
-final class IGDBGameRepository: GameRepository {
+final class IGDBGameRepository: GameRepositoryProtocol {
     private let networking: Networking
 
     init(networking: Networking = URLSessionClient()) {
@@ -32,7 +32,7 @@ final class IGDBGameRepository: GameRepository {
                 title: game.name,
                 imageURL: game.cover?.imageURL,
                 summary: game.summary,
-                rating: game.primaryRating,
+                rating: rating ?? totalRating,
                 platforms: game.platforms?.map(\.name) ?? [],
                 isFavorite: false
             )
@@ -40,11 +40,5 @@ final class IGDBGameRepository: GameRepository {
 
         let nextOffset = games.count < limit ? nil : offset + games.count
         return GamesPage(items: games, nextOffset: nextOffset)
-    }
-}
-
-private extension IGDBGameResponse {
-    var primaryRating: Double? {
-        rating ?? totalRating
     }
 }

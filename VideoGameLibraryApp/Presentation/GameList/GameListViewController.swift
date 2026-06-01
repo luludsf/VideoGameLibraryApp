@@ -28,7 +28,7 @@ final class GameListViewController: UIViewController {
         return searchController
     }()
     
-    init(viewModel: GameListViewModel, imageLoader: ImageLoading) {
+    init(viewModel: GameListViewModel, imageLoader: ImageLoadingProtocol) {
         self.gameListView = GameListScreenView(imageLoader: imageLoader)
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)

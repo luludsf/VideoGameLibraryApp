@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-protocol FavoriteGamesStore {
+protocol FavoriteGamesStoreProtocol {
     func fetchFavoriteGames() async throws -> [GameItem]
     func fetchFavoriteGameIDs() async throws -> Set<String>
     func saveFavorite(_ game: GameItem) async throws
@@ -16,12 +16,12 @@ protocol FavoriteGamesStore {
 }
 
 @MainActor
-final class DefaultFavoriteGamesStore: FavoriteGamesStore {
-    private let repository: FavoriteGamesRepository
+final class DefaultFavoriteGamesStore: FavoriteGamesStoreProtocol {
+    private let repository: FavoriteGamesRepositoryProtocol
     private var favoriteGames: [GameItem] = []
     private var hasLoadedFavorites = false
 
-    init(repository: FavoriteGamesRepository) {
+    init(repository: FavoriteGamesRepositoryProtocol) {
         self.repository = repository
     }
 

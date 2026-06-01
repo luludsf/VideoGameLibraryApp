@@ -26,7 +26,7 @@ final class GameListScreenView: UIView {
     private let listView: GameListView
     private let feedbackView = FeedbackStateView()
 
-    init(frame: CGRect = .zero, imageLoader: ImageLoading) {
+    init(frame: CGRect = .zero, imageLoader: ImageLoadingProtocol) {
         self.listView = GameListView(imageLoader: imageLoader)
         super.init(frame: frame)
         backgroundColor = .systemBackground

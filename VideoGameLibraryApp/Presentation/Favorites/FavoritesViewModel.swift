@@ -11,9 +11,9 @@ import Foundation
 final class FavoritesViewModel {
     var onStateChange: ((ScreenState<GameItem>) -> Void)?
 
-    private let favoriteGamesStore: FavoriteGamesStore
+    private let favoriteGamesStore: FavoriteGamesStoreProtocol
 
-    init(favoriteGamesStore: FavoriteGamesStore) {
+    init(favoriteGamesStore: FavoriteGamesStoreProtocol) {
         self.favoriteGamesStore = favoriteGamesStore
     }
 

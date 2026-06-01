@@ -13,7 +13,7 @@ final class FavoritesViewController: UIViewController {
     private let favoritesView: GameListScreenView
     private let viewModel: FavoritesViewModel
 
-    init(viewModel: FavoritesViewModel, imageLoader: ImageLoading) {
+    init(viewModel: FavoritesViewModel, imageLoader: ImageLoadingProtocol) {
         self.favoritesView = GameListScreenView(imageLoader: imageLoader)
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)

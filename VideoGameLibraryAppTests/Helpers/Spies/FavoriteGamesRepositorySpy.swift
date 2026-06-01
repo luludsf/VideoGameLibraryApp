@@ -8,7 +8,7 @@
 import Foundation
 @testable import VideoGameLibraryApp
 
-final class FavoriteGamesRepositorySpy: FavoriteGamesRepository {
+final class FavoriteGamesRepositorySpy: FavoriteGamesRepositoryProtocol {
     var fetchFavoriteGamesCallCount = 0
     var fetchFavoriteGameIDsCallCount = 0
     var saveFavoriteCallCount = 0

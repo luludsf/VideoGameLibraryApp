@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol FavoriteGamesRepository {
+protocol FavoriteGamesRepositoryProtocol {
     func fetchFavoriteGames() async throws -> [GameItem]
     func fetchFavoriteGameIDs() async throws -> Set<String>
     func saveFavorite(_ game: GameItem) async throws
