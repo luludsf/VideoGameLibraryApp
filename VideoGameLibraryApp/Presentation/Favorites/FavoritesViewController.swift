@@ -58,6 +58,7 @@ final class FavoritesViewController: UIViewController {
                 self.favoritesView.hideFeedback()
                 self.favoritesView.update(with: items)
             case .error(let message):
+                self.favoritesView.update(with: [])
                 self.favoritesView.showMessage(message)
             }
         }

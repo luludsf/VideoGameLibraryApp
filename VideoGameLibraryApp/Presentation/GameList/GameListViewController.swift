@@ -72,11 +72,13 @@ final class GameListViewController: UIViewController {
             case .loading:
                 self.gameListView.showLoading()
             case .empty:
+                self.gameListView.update(with: [])
                 self.gameListView.showMessage(LocalizedStrings.noGamesFound)
             case .success(let items):
                 self.gameListView.hideFeedback()
                 self.gameListView.update(with: items)
             case .error(let message):
+                self.gameListView.update(with: [])
                 self.gameListView.showMessage(message)
             }
         }
