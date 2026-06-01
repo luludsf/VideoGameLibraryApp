@@ -32,7 +32,7 @@ final class IGDBGameRepository: GameRepositoryProtocol {
                 title: game.name,
                 imageURL: game.cover?.imageURL,
                 summary: game.summary,
-                rating: rating ?? totalRating,
+                rating: game.rating ?? game.totalRating,
                 platforms: game.platforms?.map(\.name) ?? [],
                 isFavorite: false
             )
