@@ -13,11 +13,11 @@ final class AppDependencyContainer: ViewControllerFactoryProtocol {
     private lazy var networking: Networking = URLSessionClient()
     private lazy var imageLoader: ImageLoadingProtocol = ImageLoader()
     private lazy var favoriteGamesModelContainer: ModelContainer = makeFavoriteGamesModelContainer()
-    private lazy var swiftDataFavoriteGamesRepository: SwiftDataFavoriteGamesRepositoryProtocol = SwiftDataFavoriteGamesRepository(
+    private lazy var favoriteGamesRepository: FavoriteGamesRepositoryProtocol = FavoriteGamesRepository(
         modelContainer: favoriteGamesModelContainer
     )
     private lazy var favoriteGamesStore: FavoriteGamesStoreProtocol = FavoriteGamesStore(
-        repository: swiftDataFavoriteGamesRepository
+        repository: favoriteGamesRepository
     )
 
     func makeAppCoordinator() -> AppCoordinator {
@@ -60,10 +60,10 @@ final class AppDependencyContainer: ViewControllerFactoryProtocol {
     private func makeFavoriteGamesModelContainer() -> ModelContainer {
         do {
             return try ModelContainer(
-                for: FavoriteGameSwiftDataObj.self
+                for: FavoriteGameObj.self
             )
         } catch {
-            fatalError("Unable to create FavoriteGameRecord ModelContainer: \(error)")
+            fatalError("Unable to create FavoriteGameObj ModelContainer: \(error)")
         }
     }
 }

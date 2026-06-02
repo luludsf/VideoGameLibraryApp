@@ -1,5 +1,5 @@
 //
-//  SwiftDataFavoriteGamesRepository.swift
+//  FavoriteGamesRepository.swift
 //  VideoGameLibraryApp
 //
 //  Created by Luana Duarte on 31/05/26.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-actor SwiftDataFavoriteGamesRepository: SwiftDataFavoriteGamesRepositoryProtocol {
+actor FavoriteGamesRepository: FavoriteGamesRepositoryProtocol {
     private let modelContainer: ModelContainer
 
     init(modelContainer: ModelContainer) {
@@ -17,7 +17,7 @@ actor SwiftDataFavoriteGamesRepository: SwiftDataFavoriteGamesRepositoryProtocol
 
     func fetchFavoriteGames() throws -> [GameItem] {
         let modelContext = ModelContext(modelContainer)
-        let descriptor = FetchDescriptor<FavoriteGameSwiftDataObj>(
+        let descriptor = FetchDescriptor<FavoriteGameObj>(
             sortBy: [SortDescriptor(\.favoritedAt, order: .reverse)]
         )
 
@@ -26,7 +26,7 @@ actor SwiftDataFavoriteGamesRepository: SwiftDataFavoriteGamesRepositoryProtocol
 
     func fetchFavoriteGameIDs() throws -> Set<String> {
         let modelContext = ModelContext(modelContainer)
-        let descriptor = FetchDescriptor<FavoriteGameSwiftDataObj>()
+        let descriptor = FetchDescriptor<FavoriteGameObj>()
         return Set(try modelContext.fetch(descriptor).map(\.id))
     }
 
@@ -37,7 +37,7 @@ actor SwiftDataFavoriteGamesRepository: SwiftDataFavoriteGamesRepositoryProtocol
             record.update(from: game)
         } else {
             modelContext.insert(
-                FavoriteGameSwiftDataObj(
+                FavoriteGameObj(
                     id: game.id,
                     title: game.title,
                     imageURLString: game.imageURL?.absoluteString,
@@ -58,9 +58,11 @@ actor SwiftDataFavoriteGamesRepository: SwiftDataFavoriteGamesRepositoryProtocol
         try saveChangesIfNeeded(modelContext: modelContext)
     }
 
-    private func fetchObj(gameID: String, modelContext: ModelContext) throws -> FavoriteGameSwiftDataObj? {
-        let descriptor = FetchDescriptor<FavoriteGameSwiftDataObj>()
-        return try modelContext.fetch(descriptor).first(where: { $0.id == gameID })
+    private func fetchObj(gameID: String, modelContext: ModelContext) throws -> FavoriteGameObj? {
+        let descriptor = FetchDescriptor<FavoriteGameObj>(
+            predicate: #Predicate { $0.id == gameID }
+        )
+        return try modelContext.fetch(descriptor).first
     }
 
     private func saveChangesIfNeeded(modelContext: ModelContext) throws {

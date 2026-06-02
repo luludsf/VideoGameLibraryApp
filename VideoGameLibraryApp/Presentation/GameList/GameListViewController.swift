@@ -72,7 +72,7 @@ final class GameListViewController: UIViewController {
             self?.loadNextPage()
         }
         
-        viewModel.onStateChange = { [weak self] (state: GameListViewState) in
+        viewModel.onStateChange = { [weak self] (state: ScreenState<GameItem>) in
             guard let self = self else { return }
             switch state {
             case .loading:

@@ -29,7 +29,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -66,7 +66,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -95,7 +95,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -134,7 +134,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -197,7 +197,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -230,7 +230,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -264,7 +264,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: favoriteGamesStore
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -294,7 +294,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)
@@ -337,7 +337,7 @@ struct GameListViewModelTests {
             fetchGamesUseCase: useCase,
             favoriteGamesStore: FavoriteGamesStoreSpy()
         )
-        var receivedStates: [GameListViewState] = []
+        var receivedStates: [ScreenState<GameItem>] = []
 
         sut.onStateChange = { state in
             receivedStates.append(state)

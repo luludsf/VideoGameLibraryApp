@@ -19,7 +19,7 @@ struct FavoriteGamesStoreTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: true
         )
-        let repository = SwiftDataFavoriteGamesRepositorySpy(
+        let repository = FavoriteGamesRepositorySpy(
             favoriteGamesResult: .success([favoriteGame])
         )
         let sut = FavoriteGamesStore(repository: repository)
@@ -38,7 +38,7 @@ struct FavoriteGamesStoreTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: false
         )
-        let repository = SwiftDataFavoriteGamesRepositorySpy()
+        let repository = FavoriteGamesRepositorySpy()
         let sut = FavoriteGamesStore(repository: repository)
 
         try await sut.saveFavorite(game)
@@ -59,7 +59,7 @@ struct FavoriteGamesStoreTests {
             imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
             isFavorite: true
         )
-        let repository = SwiftDataFavoriteGamesRepositorySpy(
+        let repository = FavoriteGamesRepositorySpy(
             favoriteGamesResult: .success([favoriteGame])
         )
         let sut = FavoriteGamesStore(repository: repository)

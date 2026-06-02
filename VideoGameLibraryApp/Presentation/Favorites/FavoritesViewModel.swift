@@ -25,7 +25,7 @@ final class FavoritesViewModel {
             if favoriteGames.isEmpty {
                 onStateChange?(.empty)
             } else {
-                onStateChange?(.success(favoriteGames))
+                emitContentState(with: favoriteGames)
             }
         } catch {
             onStateChange?(.error(error.localizedDescription))
@@ -44,10 +44,18 @@ final class FavoritesViewModel {
             if updatedFavorites.isEmpty {
                 onStateChange?(.empty)
             } else {
-                onStateChange?(.success(updatedFavorites))
+                emitContentState(with: updatedFavorites)
             }
         } catch {
             onStateChange?(.error(error.localizedDescription))
         }
+    }
+
+    private func emitContentState(with items: [GameItem]) {
+        onStateChange?(
+            .content(
+                items: items
+            )
+        )
     }
 }

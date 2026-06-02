@@ -56,7 +56,7 @@ final class FavoritesViewController: UIViewController {
             case .empty:
                 self.favoritesView.update(with: [])
                 self.favoritesView.showFeedback(with: LocalizedStrings.noFavoritedGames)
-            case .success(let items):
+            case let .content(items, _, _):
                 self.favoritesView.hideFeedback()
                 self.favoritesView.update(with: items)
             case .error(let message):

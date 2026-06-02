@@ -34,10 +34,10 @@ import Testing
         #expect(favoriteGamesStore.fetchFavoriteGamesCallCount == 1)
         #expect(receivedStates.count == 2)
 
-        if case .success(let items) = receivedStates[1] {
+        if case let .content(items, _, _) = receivedStates[1] {
             #expect(items == [favoriteGame])
         } else {
-            Issue.record("Expected success state")
+            Issue.record("Expected content state")
         }
     }
 

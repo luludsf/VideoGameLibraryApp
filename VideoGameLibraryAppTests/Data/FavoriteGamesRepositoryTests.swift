@@ -1,5 +1,5 @@
 //
-//  SwiftDataFavoriteGamesRepositoryTests.swift
+//  FavoriteGamesRepositoryTests.swift
 //  VideoGameLibraryAppTests
 //
 //  Created by Luana Duarte on 31/05/26.
@@ -12,7 +12,7 @@ import Testing
 
 @MainActor
 @Suite(.serialized)
-struct SwiftDataFavoriteGamesRepositoryTests {
+struct FavoriteGamesRepositoryTests {
     @Test
     func saveFavoritePersistsAndFetchesGame() async throws {
         let sut = makeRepository()
@@ -55,13 +55,13 @@ struct SwiftDataFavoriteGamesRepositoryTests {
         #expect(try await sut.fetchFavoriteGameIDs().isEmpty)
     }
 
-    private func makeRepository() -> SwiftDataFavoriteGamesRepository {
+    private func makeRepository() -> FavoriteGamesRepository {
         let configuration = ModelConfiguration(
-            "SwiftDataFavoriteGamesRepositoryTests-\(UUID().uuidString)",
+            "FavoriteGamesRepositoryTests-\(UUID().uuidString)",
             schema: nil,
             isStoredInMemoryOnly: true
         )
-        let container = try! ModelContainer(for: FavoriteGameSwiftDataObj.self, configurations: configuration)
-        return SwiftDataFavoriteGamesRepository(modelContainer: container)
+        let container = try! ModelContainer(for: FavoriteGameObj.self, configurations: configuration)
+        return FavoriteGamesRepository(modelContainer: container)
     }
 }

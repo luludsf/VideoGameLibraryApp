@@ -9,7 +9,7 @@ import Foundation
 
 @MainActor
 final class GameListViewModel {
-    var onStateChange: ((GameListViewState) -> Void)?
+    var onStateChange: ((ScreenState<GameItem>) -> Void)?
     
     private let pageSize = 25
     private var games: [GameItem] = []

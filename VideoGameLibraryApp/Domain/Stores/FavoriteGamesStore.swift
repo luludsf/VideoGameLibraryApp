@@ -17,11 +17,11 @@ protocol FavoriteGamesStoreProtocol {
 
 @MainActor
 final class FavoriteGamesStore: FavoriteGamesStoreProtocol {
-    private let repository: SwiftDataFavoriteGamesRepositoryProtocol
+    private let repository: FavoriteGamesRepositoryProtocol
     private var favoriteGames: [GameItem] = []
     private var hasLoadedFavorites = false
 
-    init(repository: SwiftDataFavoriteGamesRepositoryProtocol) {
+    init(repository: FavoriteGamesRepositoryProtocol) {
         self.repository = repository
     }
 

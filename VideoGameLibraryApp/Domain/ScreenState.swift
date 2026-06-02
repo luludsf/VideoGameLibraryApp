@@ -5,9 +5,9 @@
 //  Created by Luana Duarte on 30/05/26.
 //
 
-enum ScreenState<T> {
+enum ScreenState<T> { 
     case loading
     case empty
-    case success([T])
+    case content(items: [T], isLoadingNextPage: Bool = false, paginationErrorMessage: String? = nil)
     case error(String)
 }
