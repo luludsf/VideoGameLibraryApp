@@ -33,4 +33,17 @@ struct FetchGamesUseCaseTests {
         #expect(repository.receivedLimits == [25])
         #expect(page == expectedPage)
     }
+
+    @Test
+    func executePropagatesRepositoryError() async {
+        let repository = GameRepositorySpy(result: .failure(TestLocalizedError(errorDescription: "Repository failed")))
+        let sut = FetchGamesUseCase(repository: repository)
+
+        do {
+            _ = try await sut.execute(searchQuery: "Zelda", offset: 25, limit: 25)
+            Issue.record("Expected execute to throw")
+        } catch {
+            #expect(error.localizedDescription == "Repository failed")
+        }
+    }
 }

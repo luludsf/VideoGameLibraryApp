@@ -55,6 +55,69 @@ struct FavoriteGamesRepositoryTests {
         #expect(try await sut.fetchFavoriteGameIDs().isEmpty)
     }
 
+    @Test
+    func saveFavoriteUpdatesExistingRecordInsteadOfDuplicatingIt() async throws {
+        let sut = makeRepository()
+        let originalGame = GameItem(
+            id: "1",
+            title: "Mario",
+            imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
+            summary: "Original summary",
+            rating: 80.0,
+            platforms: ["NES"],
+            isFavorite: true
+        )
+        let updatedGame = GameItem(
+            id: "1",
+            title: "Super Mario Bros.",
+            imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2.jpg"),
+            summary: "Updated summary",
+            rating: 95.0,
+            platforms: ["Switch"],
+            isFavorite: true
+        )
+
+        try await sut.saveFavorite(originalGame)
+        try await sut.saveFavorite(updatedGame)
+
+        let favorites = try await sut.fetchFavoriteGames()
+
+        #expect(favorites.count == 1)
+        #expect(favorites[0].title == "Super Mario Bros.")
+        #expect(favorites[0].summary == "Updated summary")
+        #expect(favorites[0].rating == 95.0)
+        #expect(favorites[0].platforms == ["Switch"])
+        #expect(favorites[0].imageURL?.absoluteString == "https://images.igdb.com/igdb/image/upload/t_cover_big/co2.jpg")
+    }
+
+    @Test
+    func fetchFavoriteGamesReturnsMostRecentlyFavoritedItemFirst() async throws {
+        let sut = makeRepository()
+        let olderGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: true)
+        let newerGame = GameItem(id: "2", title: "Zelda", imageURL: nil, isFavorite: true)
+
+        try await sut.saveFavorite(olderGame)
+        try await sut.saveFavorite(newerGame)
+
+        let favorites = try await sut.fetchFavoriteGames()
+
+        #expect(favorites.map(\.id) == ["2", "1"])
+    }
+
+    @Test
+    func fetchFavoriteGameIDsReturnsPersistedIDs() async throws {
+        let sut = makeRepository()
+        let firstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: true)
+        let secondGame = GameItem(id: "2", title: "Zelda", imageURL: nil, isFavorite: true)
+
+        try await sut.saveFavorite(firstGame)
+        try await sut.saveFavorite(secondGame)
+
+        let ids = try await sut.fetchFavoriteGameIDs()
+
+        #expect(ids == ["1", "2"])
+    }
+
     private func makeRepository() -> FavoriteGamesRepository {
         let configuration = ModelConfiguration(
             "FavoriteGamesRepositoryTests-\(UUID().uuidString)",

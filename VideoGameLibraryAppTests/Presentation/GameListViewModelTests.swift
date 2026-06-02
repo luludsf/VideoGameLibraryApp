@@ -358,4 +358,132 @@ struct GameListViewModelTests {
             Issue.record("Expected content state with pagination error")
         }
     }
+
+    @MainActor
+    @Test
+    func loadNextPageDoesNothingWhenThereIsNoNextOffset() async {
+        let firstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: false)
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [firstGame], nextOffset: nil))
+        )
+        let sut = GameListViewModel(
+            fetchGamesUseCase: useCase,
+            favoriteGamesStore: FavoriteGamesStoreSpy()
+        )
+        var receivedStates: [ScreenState<GameItem>] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+
+        await sut.fetchGames()
+        await sut.loadNextPage()
+
+        #expect(useCase.executeCallCount == 1)
+        #expect(receivedStates.count == 2)
+    }
+
+    @MainActor
+    @Test
+    func loadNextPageDeduplicatesItemsReturnedByTheNextPage() async {
+        let firstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: false)
+        let duplicateFirstGame = GameItem(id: "1", title: "Mario", imageURL: nil, isFavorite: false)
+        let secondGame = GameItem(id: "2", title: "Zelda", imageURL: nil, isFavorite: false)
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [firstGame], nextOffset: 25))
+        )
+        let sut = GameListViewModel(
+            fetchGamesUseCase: useCase,
+            favoriteGamesStore: FavoriteGamesStoreSpy()
+        )
+        var receivedStates: [ScreenState<GameItem>] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+
+        await sut.fetchGames()
+        useCase.result = .success(GamesPage(items: [duplicateFirstGame, secondGame], nextOffset: nil))
+
+        await sut.loadNextPage()
+
+        if let lastState = receivedStates.last, case let .content(games, _, _) = lastState {
+            #expect(games.map(\.id) == ["1", "2"])
+        } else {
+            Issue.record("Expected content state with deduplicated items")
+        }
+    }
+
+    @MainActor
+    @Test
+    func toggleFavoriteEmitsPaginationErrorWhenFavoriteUpdateFailsAndThereIsContent() async {
+        let initialGame = GameItem(
+            id: "1",
+            title: "Mario",
+            imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
+            isFavorite: false
+        )
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [initialGame], nextOffset: nil))
+        )
+        let favoriteGamesStore = FavoriteGamesStoreSpy()
+        favoriteGamesStore.saveFavoriteError = TestLocalizedError(errorDescription: "Save failed")
+        let sut = GameListViewModel(
+            fetchGamesUseCase: useCase,
+            favoriteGamesStore: favoriteGamesStore
+        )
+        var receivedStates: [ScreenState<GameItem>] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+
+        await sut.fetchGames()
+        await sut.toggleFavorite(for: initialGame)
+
+        if let lastState = receivedStates.last, case let .content(games, isLoadingNextPage, paginationErrorMessage) = lastState {
+            #expect(games == [initialGame])
+            #expect(isLoadingNextPage == false)
+            #expect(paginationErrorMessage == "Save failed")
+        } else {
+            Issue.record("Expected content state with favorite update error")
+        }
+    }
+
+    @MainActor
+    @Test
+    func refreshFavoriteStatesEmitsPaginationErrorWhenStoreFails() async {
+        let remoteGame = GameItem(
+            id: "1",
+            title: "Mario",
+            imageURL: URL(string: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg"),
+            isFavorite: false
+        )
+        let useCase = FetchGamesUseCaseSpy(
+            result: .success(GamesPage(items: [remoteGame], nextOffset: nil))
+        )
+        let favoriteGamesStore = FavoriteGamesStoreSpy(
+            favoriteGameIDsResult: .success([])
+        )
+        let sut = GameListViewModel(
+            fetchGamesUseCase: useCase,
+            favoriteGamesStore: favoriteGamesStore
+        )
+        var receivedStates: [ScreenState<GameItem>] = []
+
+        sut.onStateChange = { state in
+            receivedStates.append(state)
+        }
+
+        await sut.fetchGames()
+        favoriteGamesStore.favoriteGameIDsResult = .failure(TestLocalizedError(errorDescription: "Refresh failed"))
+        await sut.refreshFavoriteStates()
+
+        if let lastState = receivedStates.last, case let .content(games, _, paginationErrorMessage) = lastState {
+            #expect(games == [remoteGame])
+            #expect(paginationErrorMessage == "Refresh failed")
+        } else {
+            Issue.record("Expected content state with refresh error")
+        }
+    }
 }
